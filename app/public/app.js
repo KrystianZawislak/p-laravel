@@ -118,6 +118,10 @@ $(function () {
     this.style.transform = '';
   });
 
+  $(document).on('click', '.card', function () {
+    document.getElementById('rezerwacja').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
   /* ---- STATS ---- */
   $('#stats').html(STATS.map((s, i) => `
     <div class="stat reveal" style="transition-delay:${i * 80}ms">
@@ -203,6 +207,10 @@ $(function () {
         const fade = p < 0.82 ? 1 : Math.max(0, 1 - (p - 0.82) / 0.16);
         copy.style.opacity = fade;
       }
+
+      /* fade scroll hint at very end */
+      const hint = document.querySelector('.scroll-hint');
+      if (hint) hint.style.opacity = p < 0.88 ? 1 : Math.max(0, 1 - (p - 0.88) / 0.10);
 
       /* subtle zoom */
       canvas.style.transform = 'scale(' + (1 + p * 0.18) + ')';

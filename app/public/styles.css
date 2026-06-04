@@ -115,10 +115,10 @@ body{
 @keyframes slide{to{transform:translateX(-50%)}}
 
 /* ---- section heads ---- */
-.section{position:relative;z-index:6;padding:120px 0;background:var(--cream)}
+.section{position:relative;z-index:6;padding:80px 0;background:var(--cream)}
 .section.alt{background:var(--cream-2)}
 .sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:30px;
-  margin-bottom:64px;flex-wrap:wrap}
+  margin-bottom:40px;flex-wrap:wrap}
 .sec-title{font-family:var(--serif);font-weight:500;font-size:clamp(36px,5vw,64px);line-height:1;
   letter-spacing:-.01em;max-width:14ch}
 .sec-title em{font-style:italic;color:var(--rose-deep)}
@@ -129,11 +129,11 @@ body{
 .reveal.in{opacity:1;transform:none}
 
 /* ---- service cards (morph / rotate / float) ---- */
-.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
 @media(max-width:980px){.cards{grid-template-columns:1fr 1fr}}
 @media(max-width:620px){.cards{grid-template-columns:1fr}}
 .card{position:relative;background:var(--cream);border:1px solid var(--sand-deep);
-  border-radius:34px 34px 34px 34px;padding:38px 32px 34px;min-height:330px;
+  border-radius:34px 34px 34px 34px;padding:26px 24px 22px;min-height:220px;
   display:flex;flex-direction:column;overflow:hidden;cursor:pointer;
   transition:transform .6s var(--ease-out),box-shadow .6s var(--ease-out),
     border-radius 1.1s var(--ease),border-color .5s,background .6s;
@@ -152,11 +152,11 @@ body{
 @keyframes morph{0%,100%{border-radius:47% 53% 44% 56%/52% 44% 56% 48%}
   33%{border-radius:62% 38% 60% 40%/45% 55% 45% 55%}
   66%{border-radius:38% 62% 35% 65%/63% 40% 60% 37%}}
-.card h3{font-family:var(--serif);font-weight:600;font-size:27px;line-height:1.08;
-  letter-spacing:-.01em;position:relative;z-index:2;margin-top:16px}
-.card p{position:relative;z-index:2;color:var(--ink-soft);font-size:14.5px;line-height:1.6;margin-top:11px}
-.card .tag{position:relative;z-index:2;margin-top:auto;padding-top:22px;display:inline-flex;align-items:center;gap:8px;
-  font-size:13px;font-weight:600;color:var(--rose-deep);letter-spacing:.02em}
+.card h3{font-family:var(--serif);font-weight:600;font-size:22px;line-height:1.08;
+  letter-spacing:-.01em;position:relative;z-index:2;margin-top:10px}
+.card p{position:relative;z-index:2;color:var(--ink-soft);font-size:13.5px;line-height:1.55;margin-top:8px}
+.card .tag{position:relative;z-index:2;margin-top:auto;padding-top:14px;display:inline-flex;align-items:center;gap:8px;
+  font-size:12px;font-weight:600;color:var(--rose-deep);letter-spacing:.02em}
 .card .arrow{display:inline-block;transition:transform .5s var(--ease-out)}
 .card:hover .arrow{transform:translateX(6px)}
 
