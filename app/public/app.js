@@ -2,6 +2,30 @@
 
 $(function () {
 
+  /* ---- AUTH STATE ---- */
+  let currentUser = null;
+  try { currentUser = JSON.parse(localStorage.getItem('artikula_user')); } catch(e) {}
+
+  function renderNavAuth() {
+    if (currentUser) {
+      $('#nav-auth').html(`
+        <span style="font-size:14px;font-weight:500;color:var(--ink-soft);margin-right:4px">
+          ${currentUser.name.split(' ')[0]}
+        </span>
+        <button class="btn btn-ghost nav-cta" id="btn-logout" style="padding:11px 22px">Wyloguj</button>
+      `);
+      $('#btn-logout').on('click', function () {
+        localStorage.removeItem('artikula_user');
+        window.location.reload();
+      });
+    } else {
+      $('#nav-auth').html(`
+        <a href="/login" class="btn btn-ghost nav-cta" style="padding:11px 22px">Zaloguj się</a>
+      `);
+    }
+  }
+  renderNavAuth();
+
   /* ---- DATA ---- */
   const SERVICES = [
     'Diagnoza logopedyczna','Terapia wymowy','Emisja głosu',
