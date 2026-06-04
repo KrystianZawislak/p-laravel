@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ARTIKULA — Atelier Mowy i Dykcji</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div id="top"></div>
+<div class="grain"></div>
+
+<!-- NAV -->
+<nav class="nav" id="nav">
+  <div class="wrap nav-inner">
+    <a class="brand" href="#top"><span class="dot"></span>ARTIKULA</a>
+    <div class="nav-links">
+      <a href="#uslugi">Usługi</a>
+      <a href="#metoda">Metoda</a>
+      <a href="#opinie">Opinie</a>
+      <a href="#rezerwacja" class="btn btn-ghost nav-cta" style="padding:11px 22px">Umów wizytę</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="hero-pin">
+    <div class="hero-copy wrap" id="hero-copy">
+      <div class="eyebrow" style="margin-bottom:22px">Salon logopedyczny · od 2009</div>
+      <h1 class="hero-h1">Mów <em>pięknie.</em></h1>
+      <div class="lips-slot">
+        <canvas id="lips" width="620" height="349"></canvas>
+      </div>
+      <h1 class="hero-h1">Mów wyraźnie.</h1>
+      <p class="hero-sub">Atelier mowy, dykcji i emisji głosu. Prowadzimy Cię od pierwszej
+        samogłoski do swobodnej, pewnej wypowiedzi.</p>
+      <div class="hero-cta">
+        <a href="#rezerwacja" class="btn btn-primary">Umów konsultację</a>
+        <a href="#uslugi" class="btn btn-ghost">Zobacz usługi</a>
+      </div>
+    </div>
+    <div class="scroll-hint"><span>przewiń</span><span class="line"></span></div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee">
+  <div class="marquee-track" id="marquee-track"></div>
+</div>
+
+<!-- SERVICES -->
+<section class="section" id="uslugi">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <h2 class="sec-title">Usługi, które <em>otwierają usta</em></h2>
+      <p class="sec-lead">Sześć ścieżek pracy nad mową — od diagnozy po scenę. Każda terapia
+        zaczyna się od słuchania Ciebie.</p>
+    </div>
+    <div class="cards" id="cards"></div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="section alt">
+  <div class="wrap">
+    <div class="sec-head reveal" style="margin-bottom:46px">
+      <h2 class="sec-title">Liczby, które <em>mówią same</em></h2>
+    </div>
+    <div class="stats" id="stats"></div>
+  </div>
+</section>
+
+<!-- APPROACH -->
+<section class="section" id="metoda">
+  <div class="wrap split">
+    <div class="reveal">
+      <div class="eyebrow" style="margin-bottom:18px">Nasza metoda</div>
+      <h2 class="sec-title" style="max-width:18ch">Cztery kroki do <em>swobodnej mowy</em></h2>
+      <ol class="steps" id="steps"></ol>
+    </div>
+    <div class="split-media reveal float">
+      <img src="frames/f10.jpg" alt="usta — artykulacja" />
+      <span class="chip">Gabinet · ul. Słowackiego 12, Kraków</span>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="section alt" id="opinie">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <h2 class="sec-title">Głosy naszych <em>pacjentów</em></h2>
+      <p class="sec-lead">Ponad cztery tysiące osób przeszło u nas drogę do wyraźnej mowy.
+        Oto kilka z nich.</p>
+    </div>
+    <div class="quotes" id="quotes"></div>
+  </div>
+</section>
+
+<!-- BOOKING / CRUD -->
+<section class="section" id="rezerwacja">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <h2 class="sec-title">Zarezerwuj swój <em>termin</em></h2>
+      <p class="sec-lead">Wybierz usługę i godzinę. Twoje wizyty zapisują się od razu —
+        możesz je edytować lub odwołać w każdej chwili.</p>
+    </div>
+    <div class="reveal">
+      <div class="booking">
+        <!-- FORM PANEL -->
+        <div class="panel">
+          <h3 id="form-title">Umów wizytę</h3>
+          <p class="muted" id="form-sub">Wybierz usługę i dogodny termin — potwierdzimy w 24 h.</p>
+
+          <div class="field">
+            <label for="f-name">Imię i nazwisko</label>
+            <input id="f-name" type="text" placeholder="np. Katarzyna Nowak" />
+            <div class="err-msg" id="err-name" style="display:none"></div>
+          </div>
+
+          <div class="field">
+            <label for="f-service">Usługa</label>
+            <select id="f-service"></select>
+          </div>
+
+          <div class="field" style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+            <div>
+              <label for="f-date">Data</label>
+              <input id="f-date" type="date" />
+              <div class="err-msg" id="err-date" style="display:none"></div>
+            </div>
+            <div>
+              <label for="f-mode">Forma</label>
+              <select id="f-mode">
+                <option>Gabinet</option>
+                <option>Online</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Godzina</label>
+            <div class="chips" id="time-chips"></div>
+          </div>
+
+          <div style="display:flex;gap:10px;margin-top:8px">
+            <button class="btn btn-rose" id="btn-submit" style="flex:1;justify-content:center">Zarezerwuj termin</button>
+            <button class="btn btn-ghost" id="btn-cancel" style="display:none">Anuluj</button>
+          </div>
+        </div>
+
+        <!-- LIST -->
+        <div>
+          <div class="bookings-head">
+            <h3>Twoje wizyty</h3>
+            <span class="count-pill" id="count-pill">0 zaplanowane</span>
+          </div>
+          <div id="b-list-wrap">
+            <div class="b-empty">
+              <div class="big">Brak zaplanowanych wizyt</div>
+              <div>Umów pierwszą wizytę w formularzu obok.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+  <div class="cta-blob b1"></div>
+  <div class="cta-blob b2"></div>
+  <div class="wrap">
+    <h2>Twój głos<br/>zasługuje na <em>słuch</em>.</h2>
+    <p>Umów bezpłatną, 20-minutową konsultację wstępną. Sprawdzimy, od czego zacząć — bez zobowiązań.</p>
+    <div class="cta-actions">
+      <a href="#rezerwacja" class="btn btn-rose">Umów konsultację</a>
+      <a href="tel:+48123456789" class="btn btn-ghost">+48 123 456 789</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="foot-top">
+      <div>
+        <div class="foot-brand">ARTIKULA<span class="dot">.</span></div>
+        <p style="max-width:34ch;color:var(--ink-soft);font-size:14.5px;line-height:1.6;margin-top:12px">
+          Atelier mowy, dykcji i emisji głosu. Kraków · od 2009 roku.</p>
+      </div>
+      <div class="foot-cols">
+        <div class="foot-col">
+          <h5>Usługi</h5>
+          <a href="#uslugi">Diagnoza</a>
+          <a href="#uslugi">Terapia wymowy</a>
+          <a href="#uslugi">Emisja głosu</a>
+          <a href="#uslugi">Trening dykcji</a>
+        </div>
+        <div class="foot-col">
+          <h5>Salon</h5>
+          <a href="#metoda">Metoda</a>
+          <a href="#opinie">Opinie</a>
+          <a href="#rezerwacja">Rezerwacja</a>
+          <a href="#top">Kontakt</a>
+        </div>
+        <div class="foot-col">
+          <h5>Kontakt</h5>
+          <a href="tel:+48123456789">+48 123 456 789</a>
+          <a href="#">kontakt@artikula.pl</a>
+          <a href="#">ul. Słowackiego 12</a>
+          <a href="#">30-001 Kraków</a>
+        </div>
+      </div>
+    </div>
+    <div class="foot-bot">
+      <span>© 2026 ARTIKULA Atelier Mowy. Wszelkie prawa zastrzeżone.</span>
+      <span>Pon–Pt 8:00–20:00 · Sob 9:00–14:00</span>
+    </div>
+  </div>
+</footer>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><span class="tdot"></span><span id="toast-msg"></span></div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
