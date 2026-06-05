@@ -110,6 +110,8 @@ body{
   .mobile-menu{justify-content:flex-start;padding-top:max(56px,env(safe-area-inset-top));gap:0}
   .mob-link{font-size:clamp(15px,4vh,22px);padding:7px 0}
   .mob-cta{margin-top:8px;padding:10px 28px!important;font-size:13px!important}
+  .marquee{padding:12px 0}
+  .marquee-track span{font-size:17px}
 }
 .mob-link{font-family:var(--serif);font-size:clamp(26px,7vw,40px);font-weight:500;
   color:var(--ink);text-decoration:none;letter-spacing:-.01em;
