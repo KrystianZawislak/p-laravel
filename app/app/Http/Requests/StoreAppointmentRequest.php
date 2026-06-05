@@ -33,6 +33,12 @@ class StoreAppointmentRequest extends FormRequest
             if ($taken) {
                 $validator->errors()->add('time', 'Ten termin jest już zajęty.');
             }
+
+            $count = \App\Models\Appointment::where('user_id', auth()->id())->count();
+
+            if ($count >= 3) {
+                $validator->errors()->add('limit', 'Możesz mieć maksymalnie 3 zaplanowane wizyty.');
+            }
         });
     }
 }

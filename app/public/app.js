@@ -453,6 +453,7 @@ $(async function () {
     } else {
       const data = await res.json().catch(() => ({}));
       if (res.status === 422 && data.errors) {
+        if (data.errors.limit) { showToast(data.errors.limit[0]); }
         if (data.errors.time)  { showToast(data.errors.time[0]); }
         if (data.errors.date)  { $('#err-date').text(data.errors.date[0]).show(); $('#f-date').addClass('err'); }
         if (data.errors.patient_name) { $('#err-name').text(data.errors.patient_name[0]).show(); $('#f-name').addClass('err'); }

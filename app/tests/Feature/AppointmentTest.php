@@ -137,4 +137,29 @@ class AppointmentTest extends TestCase
         $response->assertStatus(422)
                  ->assertJsonValidationErrors(['time']);
     }
+
+    public function test_cannot_exceed_appointment_limit(): void
+    {
+        foreach (['09:00', '10:00', '11:00'] as $time) {
+            Appointment::create([
+                'user_id'      => $this->user->id,
+                'service_id'   => $this->service->id,
+                'patient_name' => 'Pacjent',
+                'date'         => '2026-08-01',
+                'time'         => $time,
+                'mode'         => 'stacjonarnie',
+            ]);
+        }
+
+        $response = $this->actingAs($this->user)->postJson('/api/appointments', [
+            'service_id'   => $this->service->id,
+            'patient_name' => 'Czwarty pacjent',
+            'date'         => '2026-08-02',
+            'time'         => '09:00',
+            'mode'         => 'stacjonarnie',
+        ]);
+
+        $response->assertStatus(422)
+                 ->assertJsonValidationErrors(['limit']);
+    }
 }
