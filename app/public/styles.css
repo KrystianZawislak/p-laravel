@@ -112,6 +112,13 @@ body{
   .mob-cta{margin-top:8px;padding:10px 28px!important;font-size:13px!important}
   .marquee{padding:12px 0}
   .marquee-track span{font-size:17px}
+  .hero{height:100vh}
+  .lips-slot{display:none!important}
+  .scroll-hint{display:none!important}
+  .hero-sub{display:none}
+  .hero-h1{font-size:clamp(28px,7vh,44px);line-height:1}
+  .hero-cta{margin-top:16px;gap:10px}
+  .section{padding:44px 0}
 }
 .mob-link{font-family:var(--serif);font-size:clamp(26px,7vw,40px);font-weight:500;
   color:var(--ink);text-decoration:none;letter-spacing:-.01em;
