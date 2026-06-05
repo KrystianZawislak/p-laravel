@@ -135,10 +135,24 @@ $(async function () {
   }
   renderMobAuth();
 
+  let _scrollY = 0;
+  function lockBody() {
+    _scrollY = window.scrollY;
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${_scrollY}px`;
+    document.body.style.width = '100%';
+  }
+  function unlockBody() {
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.width = '';
+    window.scrollTo(0, _scrollY);
+  }
+
   function closeMobileMenu() {
     $('#hamburger').removeClass('open');
     $('#mobile-menu').removeClass('open');
-    $('body').css('overflow', '');
+    unlockBody();
   }
 
   $('#hamburger').on('click', function () {
@@ -148,7 +162,7 @@ $(async function () {
     } else {
       $(this).addClass('open');
       $('#mobile-menu').addClass('open');
-      $('body').css('overflow', 'hidden');
+      lockBody();
     }
   });
 

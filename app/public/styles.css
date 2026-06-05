@@ -101,10 +101,16 @@ body{
 /* ---- mobile menu ---- */
 .mobile-menu{position:fixed;top:0;left:0;right:0;bottom:0;z-index:50;
   background:var(--cream);display:flex;flex-direction:column;justify-content:center;align-items:center;gap:6px;
-  padding:80px 32px 40px;
+  padding:80px 32px max(40px,env(safe-area-inset-bottom));
+  overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
   opacity:0;pointer-events:none;transform:translateY(-12px);
   transition:opacity .35s var(--ease-out),transform .35s var(--ease-out)}
 .mobile-menu.open{opacity:1;pointer-events:auto;transform:none}
+@media(orientation:landscape)and(max-height:520px){
+  .mobile-menu{justify-content:flex-start;padding-top:max(56px,env(safe-area-inset-top));gap:0}
+  .mob-link{font-size:clamp(15px,4vh,22px);padding:7px 0}
+  .mob-cta{margin-top:8px;padding:10px 28px!important;font-size:13px!important}
+}
 .mob-link{font-family:var(--serif);font-size:clamp(26px,7vw,40px);font-weight:500;
   color:var(--ink);text-decoration:none;letter-spacing:-.01em;
   padding:10px 0;width:100%;text-align:center;
