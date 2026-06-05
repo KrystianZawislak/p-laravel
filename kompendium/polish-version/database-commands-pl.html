@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ARTIKULA — Komendy bazodanowe</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 14px; color: #1a1a1a; line-height: 1.6; background: #fff; padding: 48px; max-width: 860px; margin: 0 auto; }
+  h1 { font-size: 28px; font-weight: 700; margin-bottom: 4px; letter-spacing: -0.5px; }
+  .subtitle { font-size: 14px; color: #666; margin-bottom: 40px; }
+  h2 { font-size: 16px; font-weight: 700; margin: 36px 0 12px; padding-bottom: 6px; border-bottom: 2px solid #e8e8e8; text-transform: uppercase; letter-spacing: 0.05em; color: #111; }
+  h3 { font-size: 13px; font-weight: 700; margin: 20px 0 8px; color: #333; }
+  p { margin-bottom: 10px; color: #444; }
+  pre { background: #f4f4f4; border: 1px solid #e0e0e0; border-radius: 6px; padding: 12px 16px; margin: 6px 0 14px; overflow-x: auto; }
+  code { font-family: 'SF Mono', 'Fira Code', Consolas, monospace; font-size: 12.5px; color: #1a1a1a; }
+  .inline { background: #f0f0f0; padding: 1px 6px; border-radius: 3px; font-family: monospace; font-size: 12.5px; }
+  .note { background: #fffbeb; border-left: 3px solid #f59e0b; padding: 10px 14px; margin: 10px 0; border-radius: 0 6px 6px 0; font-size: 13px; color: #555; }
+  .warn { background: #fff1f0; border-left: 3px solid #ef4444; padding: 10px 14px; margin: 10px 0; border-radius: 0 6px 6px 0; font-size: 13px; color: #555; }
+  .ok { background: #f0fdf4; border-left: 3px solid #22c55e; padding: 10px 14px; margin: 10px 0; border-radius: 0 6px 6px 0; font-size: 13px; color: #555; }
+  .cmd-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: #888; margin: 16px 0 4px; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 13px; }
+  th { background: #f4f4f4; padding: 8px 12px; text-align: left; font-weight: 700; border: 1px solid #e0e0e0; }
+  td { padding: 8px 12px; border: 1px solid #e0e0e0; color: #444; vertical-align: top; }
+  @media print { body { padding: 20px; font-size: 12px; } pre { break-inside: avoid; } }
+</style>
+</head>
+<body>
+
+<h1>ARTIKULA — Komendy bazodanowe</h1>
+<p class="subtitle">Komendy MySQL do podglądania i zarządzania danymi podczas developmentu</p>
+
+<!-- ================================================== -->
+<h2>1 — Połącz się z MySQL</h2>
+
+<div class="cmd-label">Otwórz konsolę MySQL</div>
+<pre><code>mysql -u root artikula</code></pre>
+<p>Jesteś teraz w konsoli MySQL. Znak zachęty zmienia się na <code class="inline">mysql&gt;</code>. Wszystkie komendy SQL od tej chwili kończą się średnikiem <code class="inline">;</code>.</p>
+
+<div class="cmd-label">Aby wyjść</div>
+<pre><code>exit</code></pre>
+
+<div class="note">Na Macu z Homebrew MySQL: jeśli dostaniesz "Access denied", spróbuj <code class="inline">mysql -u root -p artikula</code> i naciśnij Enter gdy zapyta o hasło (puste hasło).</div>
+
+<!-- ================================================== -->
+<h2>2 — Jakie tabele istnieją</h2>
+
+<pre><code>SHOW TABLES;</code></pre>
+
+<p>Oczekiwany wynik dla tego projektu:</p>
+<table>
+  <tr><th>Tables_in_artikula</th></tr>
+  <tr><td>appointments</td></tr>
+  <tr><td>cache</td></tr>
+  <tr><td>cache_locks</td></tr>
+  <tr><td>failed_jobs</td></tr>
+  <tr><td>job_batches</td></tr>
+  <tr><td>jobs</td></tr>
+  <tr><td>migrations</td></tr>
+  <tr><td>password_reset_tokens</td></tr>
+  <tr><td>personal_access_tokens</td></tr>
+  <tr><td>services</td></tr>
+  <tr><td>sessions</td></tr>
+  <tr><td>users</td></tr>
+</table>
+<p>Tabele które nas interesują: <strong>users</strong>, <strong>services</strong>, <strong>appointments</strong>. Reszta jest tworzona automatycznie przez Laravel i nie jest używana przez logikę aplikacji.</p>
+
+<!-- ================================================== -->
+<h2>3 — Podgląd usług</h2>
+
+<pre><code>SELECT * FROM services;</code></pre>
+
+<p>Pokazuje wszystkie 6 usług logopedycznych wstawionych przez seeder. Są statyczne — nigdy się nie zmieniają w trakcie działania aplikacji.</p>
+
+<pre><code>SELECT id, name FROM services ORDER BY id;</code></pre>
+
+<!-- ================================================== -->
+<h2>4 — Podgląd użytkowników</h2>
+
+<pre><code>SELECT id, email, created_at FROM users;</code></pre>
+
+<div class="note">Celowo pomijamy kolumnę <code>password</code> w SELECT — to hash bcrypt, nieczytelny dla człowieka, i nie ma powodu wypisywać go w terminalu.</div>
+
+<div class="cmd-label">Policz ilu użytkowników jest zarejestrowanych</div>
+<pre><code>SELECT COUNT(*) AS total_users FROM users;</code></pre>
+
+<div class="cmd-label">Znajdź konkretnego użytkownika po emailu</div>
+<pre><code>SELECT id, email, created_at FROM users WHERE email = 'test@test.com';</code></pre>
+
+<!-- ================================================== -->
+<h2>5 — Podgląd wizyt</h2>
+
+<div class="cmd-label">Wszystkie wizyty (surowe dane)</div>
+<pre><code>SELECT * FROM appointments ORDER BY date, time;</code></pre>
+
+<div class="cmd-label">Wizyty z nazwą usługi i emailem użytkownika (JOIN)</div>
+<pre><code>SELECT
+  a.id,
+  u.email        AS uzytkownik,
+  s.name         AS usluga,
+  a.patient_name AS pacjent,
+  a.date         AS data,
+  a.time         AS godzina,
+  a.mode         AS tryb,
+  a.created_at   AS dodano
+FROM appointments a
+JOIN users    u ON u.id = a.user_id
+JOIN services s ON s.id = a.service_id
+ORDER BY a.date, a.time;</code></pre>
+
+<p>To najużyteczniejsze zapytanie — pokazuje wszystko w jednym wierszu. <code class="inline">JOIN</code> zastępuje numeryczne ID kluczy obcych prawdziwymi emailami i nazwami usług.</p>
+
+<div class="cmd-label">Wizyty konkretnego użytkownika</div>
+<pre><code>SELECT a.id, s.name AS usluga, a.date, a.time, a.mode
+FROM appointments a
+JOIN services s ON s.id = a.service_id
+WHERE a.user_id = 1
+ORDER BY a.date;</code></pre>
+
+<div class="cmd-label">Ile wizyt ma każdy użytkownik</div>
+<pre><code>SELECT u.email, COUNT(a.id) AS liczba_wizyt
+FROM users u
+LEFT JOIN appointments a ON a.user_id = u.id
+GROUP BY u.id, u.email
+ORDER BY liczba_wizyt DESC;</code></pre>
+
+<div class="cmd-label">Sprawdź czy limit 3 wizyt jest osiągnięty dla użytkownika</div>
+<pre><code>SELECT user_id, COUNT(*) AS total FROM appointments GROUP BY user_id;</code></pre>
+
+<!-- ================================================== -->
+<h2>6 — Podgląd sesji</h2>
+
+<pre><code>SELECT id, user_id, last_activity FROM sessions ORDER BY last_activity DESC LIMIT 10;</code></pre>
+
+<p>Sanctum przechowuje sesje tutaj. <code class="inline">user_id</code> to NULL dla niezalogowanych gości, liczba dla zalogowanych użytkowników. <code class="inline">last_activity</code> to znacznik czasu Unix.</p>
+
+<div class="cmd-label">Zamień timestamp last_activity na czytelną datę</div>
+<pre><code>SELECT id, user_id, FROM_UNIXTIME(last_activity) AS ostatnia_aktywnosc
+FROM sessions ORDER BY last_activity DESC LIMIT 5;</code></pre>
+
+<!-- ================================================== -->
+<h2>7 — Struktura tabeli</h2>
+
+<div class="cmd-label">Sprawdź jakie kolumny ma tabela</div>
+<pre><code>DESCRIBE appointments;</code></pre>
+<pre><code>DESCRIBE users;</code></pre>
+
+<p>Pokazuje nazwy kolumn, typy danych, czy akceptują NULL i wartości domyślne. Przydatne do weryfikacji że migracja wykonała się poprawnie.</p>
+
+<!-- ================================================== -->
+<h2>8 — Usuwanie danych testowych</h2>
+
+<div class="warn">Te komendy trwale usuwają dane. Używaj tylko podczas developmentu, nigdy na produkcji.</div>
+
+<div class="cmd-label">Usuń konkretną wizytę po ID</div>
+<pre><code>DELETE FROM appointments WHERE id = 3;</code></pre>
+
+<div class="cmd-label">Usuń wszystkie wizyty konkretnego użytkownika</div>
+<pre><code>DELETE FROM appointments WHERE user_id = 1;</code></pre>
+
+<div class="cmd-label">Usuń konkretnego użytkownika (najpierw usuń jego wizyty)</div>
+<pre><code>DELETE FROM appointments WHERE user_id = 2;
+DELETE FROM users WHERE id = 2;</code></pre>
+
+<div class="cmd-label">Wyczyść wszystkie wizyty i zresetuj licznik auto-increment</div>
+<pre><code>TRUNCATE TABLE appointments;</code></pre>
+
+<div class="cmd-label">Pełny reset (wyczyść użytkowników i wizyty — zostaw usługi)</div>
+<pre><code>SET FOREIGN_KEY_CHECKS = 0;
+TRUNCATE TABLE appointments;
+TRUNCATE TABLE users;
+TRUNCATE TABLE sessions;
+SET FOREIGN_KEY_CHECKS = 1;</code></pre>
+
+<div class="note"><code>FOREIGN_KEY_CHECKS = 0</code> tymczasowo wyłącza sprawdzanie kluczy obcych żeby można było truncatować tabele w dowolnej kolejności. Zawsze włącz ponownie po zakończeniu.</div>
+
+<!-- ================================================== -->
+<h2>9 — Historia migracji</h2>
+
+<pre><code>SELECT * FROM migrations ORDER BY id;</code></pre>
+
+<p>Laravel zapisuje tutaj każdą wykonaną migrację. Jeśli migracji nie ma na tej liście, oznacza to że nie została jeszcze zastosowana.</p>
+
+<!-- ================================================== -->
+<h2>10 — Skróty Artisan (z terminala, nie z konsoli MySQL)</h2>
+
+<p>Te komendy wpisujesz w terminalu (nie w MySQL), z folderu <code class="inline">p-laravel/app</code>:</p>
+
+<table>
+  <tr><th>Komenda</th><th>Co robi</th></tr>
+  <tr><td><code>php artisan migrate:status</code></td><td>Pokazuje które migracje zostały wykonane, a które nie</td></tr>
+  <tr><td><code>php artisan migrate:fresh --seed</code></td><td>Usuwa wszystkie tabele, tworzy je od nowa, uruchamia seedy — pełny reset</td></tr>
+  <tr><td><code>php artisan db:table users</code></td><td>Pokazuje strukturę kolumn tabeli users</td></tr>
+  <tr><td><code>php artisan db:table appointments</code></td><td>Pokazuje strukturę kolumn tabeli appointments</td></tr>
+  <tr><td><code>php artisan tinker</code></td><td>Interaktywna konsola PHP — uruchamiaj kod Laravel/Eloquent na żywo</td></tr>
+</table>
+
+<div class="cmd-label">Przykłady Tinker (uruchamiane wewnątrz php artisan tinker)</div>
+<pre><code>// Policz wszystkich użytkowników
+App\Models\User::count();
+
+// Zobacz wszystkie wizyty
+App\Models\Appointment::with('service','user')->get();
+
+// Znajdź wizyty użytkownika o ID 1
+App\Models\Appointment::where('user_id', 1)->get();</code></pre>
+
+<div class="ok">Tinker to najszybszy sposób na jednorazowe zapytania bez otwierania MySQL. Wpisz <code class="inline">exit</code> żeby wyjść.</div>
+
+<br><br>
+<hr style="border:none;border-top:1px solid #e0e0e0;margin:24px 0">
+<p style="font-size:12px;color:#999;text-align:center">ARTIKULA — Laravel 13 / MySQL 9 / Sanctum SPA / PHPUnit &nbsp;|&nbsp; 2026</p>
+</body>
+</html>

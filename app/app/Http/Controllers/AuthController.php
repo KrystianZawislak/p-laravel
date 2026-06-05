@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
@@ -24,6 +25,7 @@ class AuthController extends Controller
     public function login(LoginRequest $request): JsonResponse
     {
         if (! Auth::attempt($request->only('email', 'password'))) {
+            Log::warning('Failed login attempt', ['email' => $request->email, 'ip' => $request->ip()]);
             return response()->json(['message' => 'Nieprawidłowe dane logowania.'], 401);
         }
 

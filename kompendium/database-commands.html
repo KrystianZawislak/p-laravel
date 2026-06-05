@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ARTIKULA — Database Commands</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 14px; color: #1a1a1a; line-height: 1.6; background: #fff; padding: 48px; max-width: 860px; margin: 0 auto; }
+  h1 { font-size: 28px; font-weight: 700; margin-bottom: 4px; letter-spacing: -0.5px; }
+  .subtitle { font-size: 14px; color: #666; margin-bottom: 40px; }
+  h2 { font-size: 16px; font-weight: 700; margin: 36px 0 12px; padding-bottom: 6px; border-bottom: 2px solid #e8e8e8; text-transform: uppercase; letter-spacing: 0.05em; color: #111; }
+  h3 { font-size: 13px; font-weight: 700; margin: 20px 0 8px; color: #333; }
+  p { margin-bottom: 10px; color: #444; }
+  pre { background: #f4f4f4; border: 1px solid #e0e0e0; border-radius: 6px; padding: 12px 16px; margin: 6px 0 14px; overflow-x: auto; }
+  code { font-family: 'SF Mono', 'Fira Code', Consolas, monospace; font-size: 12.5px; color: #1a1a1a; }
+  .inline { background: #f0f0f0; padding: 1px 6px; border-radius: 3px; font-family: monospace; font-size: 12.5px; }
+  .note { background: #fffbeb; border-left: 3px solid #f59e0b; padding: 10px 14px; margin: 10px 0; border-radius: 0 6px 6px 0; font-size: 13px; color: #555; }
+  .warn { background: #fff1f0; border-left: 3px solid #ef4444; padding: 10px 14px; margin: 10px 0; border-radius: 0 6px 6px 0; font-size: 13px; color: #555; }
+  .ok { background: #f0fdf4; border-left: 3px solid #22c55e; padding: 10px 14px; margin: 10px 0; border-radius: 0 6px 6px 0; font-size: 13px; color: #555; }
+  .cmd-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: #888; margin: 16px 0 4px; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 13px; }
+  th { background: #f4f4f4; padding: 8px 12px; text-align: left; font-weight: 700; border: 1px solid #e0e0e0; }
+  td { padding: 8px 12px; border: 1px solid #e0e0e0; color: #444; vertical-align: top; }
+  @media print { body { padding: 20px; font-size: 12px; } pre { break-inside: avoid; } }
+</style>
+</head>
+<body>
+
+<h1>ARTIKULA — Database Commands</h1>
+<p class="subtitle">MySQL commands for inspecting and managing data during development</p>
+
+<!-- ================================================== -->
+<h2>1 — Connect to MySQL</h2>
+
+<div class="cmd-label">Open MySQL shell</div>
+<pre><code>mysql -u root artikula</code></pre>
+<p>You are now inside the MySQL shell. The prompt changes to <code class="inline">mysql&gt;</code>. All SQL commands from this point end with <code class="inline">;</code>.</p>
+
+<div class="cmd-label">To exit</div>
+<pre><code>exit</code></pre>
+
+<div class="note">On Mac with Homebrew MySQL: if you get "Access denied", try <code class="inline">mysql -u root -p artikula</code> and press Enter when asked for password (empty password).</div>
+
+<!-- ================================================== -->
+<h2>2 — What tables exist</h2>
+
+<pre><code>SHOW TABLES;</code></pre>
+
+<p>Expected output for this project:</p>
+<table>
+  <tr><th>Tables_in_artikula</th></tr>
+  <tr><td>appointments</td></tr>
+  <tr><td>cache</td></tr>
+  <tr><td>cache_locks</td></tr>
+  <tr><td>failed_jobs</td></tr>
+  <tr><td>job_batches</td></tr>
+  <tr><td>jobs</td></tr>
+  <tr><td>migrations</td></tr>
+  <tr><td>password_reset_tokens</td></tr>
+  <tr><td>personal_access_tokens</td></tr>
+  <tr><td>services</td></tr>
+  <tr><td>sessions</td></tr>
+  <tr><td>users</td></tr>
+</table>
+<p>The tables we care about: <strong>users</strong>, <strong>services</strong>, <strong>appointments</strong>. The rest are created by Laravel automatically and are not used by our app logic.</p>
+
+<!-- ================================================== -->
+<h2>3 — View services</h2>
+
+<pre><code>SELECT * FROM services;</code></pre>
+
+<p>Shows all 6 therapy services inserted by the seeder. These are static — they never change at runtime.</p>
+
+<pre><code>SELECT id, name FROM services ORDER BY id;</code></pre>
+
+<!-- ================================================== -->
+<h2>4 — View users</h2>
+
+<pre><code>SELECT id, email, created_at FROM users;</code></pre>
+
+<div class="note">We deliberately omit <code>password</code> from the SELECT — it's bcrypt hash, not readable, and there's no reason to print it to the terminal.</div>
+
+<div class="cmd-label">Count how many users are registered</div>
+<pre><code>SELECT COUNT(*) AS total_users FROM users;</code></pre>
+
+<div class="cmd-label">Find a specific user by email</div>
+<pre><code>SELECT id, email, created_at FROM users WHERE email = 'test@test.com';</code></pre>
+
+<!-- ================================================== -->
+<h2>5 — View appointments</h2>
+
+<div class="cmd-label">All appointments (raw)</div>
+<pre><code>SELECT * FROM appointments ORDER BY date, time;</code></pre>
+
+<div class="cmd-label">Appointments with service name (JOIN)</div>
+<pre><code>SELECT
+  a.id,
+  u.email        AS user,
+  s.name         AS service,
+  a.patient_name,
+  a.date,
+  a.time,
+  a.mode,
+  a.created_at
+FROM appointments a
+JOIN users    u ON u.id = a.user_id
+JOIN services s ON s.id = a.service_id
+ORDER BY a.date, a.time;</code></pre>
+
+<p>This is the most useful query — shows everything in one row. The <code class="inline">JOIN</code> replaces the numeric foreign key IDs with the actual email and service name.</p>
+
+<div class="cmd-label">Appointments for a specific user</div>
+<pre><code>SELECT a.id, s.name AS service, a.date, a.time, a.mode
+FROM appointments a
+JOIN services s ON s.id = a.service_id
+WHERE a.user_id = 1
+ORDER BY a.date;</code></pre>
+
+<div class="cmd-label">Count appointments per user</div>
+<pre><code>SELECT u.email, COUNT(a.id) AS appointment_count
+FROM users u
+LEFT JOIN appointments a ON a.user_id = u.id
+GROUP BY u.id, u.email
+ORDER BY appointment_count DESC;</code></pre>
+
+<div class="cmd-label">Check if the max-3 limit is reached for a user</div>
+<pre><code>SELECT user_id, COUNT(*) AS total FROM appointments GROUP BY user_id;</code></pre>
+
+<!-- ================================================== -->
+<h2>6 — View sessions</h2>
+
+<pre><code>SELECT id, user_id, last_activity FROM sessions ORDER BY last_activity DESC LIMIT 10;</code></pre>
+
+<p>Sanctum stores sessions here. <code class="inline">user_id</code> is NULL for unauthenticated visitors, a number for logged-in users. <code class="inline">last_activity</code> is a Unix timestamp.</p>
+
+<div class="cmd-label">Convert last_activity timestamp to readable date</div>
+<pre><code>SELECT id, user_id, FROM_UNIXTIME(last_activity) AS last_seen
+FROM sessions ORDER BY last_activity DESC LIMIT 5;</code></pre>
+
+<!-- ================================================== -->
+<h2>7 — Describe table structure</h2>
+
+<div class="cmd-label">See what columns a table has</div>
+<pre><code>DESCRIBE appointments;</code></pre>
+<pre><code>DESCRIBE users;</code></pre>
+
+<p>Shows column names, data types, whether they allow NULL, and default values. Useful to verify the migration ran correctly.</p>
+
+<!-- ================================================== -->
+<h2>8 — Delete test data</h2>
+
+<div class="warn">These commands permanently delete data. Only use during development, never on production.</div>
+
+<div class="cmd-label">Delete a specific appointment by ID</div>
+<pre><code>DELETE FROM appointments WHERE id = 3;</code></pre>
+
+<div class="cmd-label">Delete all appointments for a specific user</div>
+<pre><code>DELETE FROM appointments WHERE user_id = 1;</code></pre>
+
+<div class="cmd-label">Delete a specific user (remove their appointments first)</div>
+<pre><code>DELETE FROM appointments WHERE user_id = 2;
+DELETE FROM users WHERE id = 2;</code></pre>
+
+<div class="cmd-label">Wipe all appointments and reset auto-increment counter</div>
+<pre><code>TRUNCATE TABLE appointments;</code></pre>
+
+<div class="cmd-label">Full reset (wipe all users and appointments — keep services)</div>
+<pre><code>SET FOREIGN_KEY_CHECKS = 0;
+TRUNCATE TABLE appointments;
+TRUNCATE TABLE users;
+TRUNCATE TABLE sessions;
+SET FOREIGN_KEY_CHECKS = 1;</code></pre>
+
+<div class="note"><code>FOREIGN_KEY_CHECKS = 0</code> temporarily disables constraint checking so you can truncate in any order. Always re-enable it after.</div>
+
+<!-- ================================================== -->
+<h2>9 — Check migration history</h2>
+
+<pre><code>SELECT * FROM migrations ORDER BY id;</code></pre>
+
+<p>Laravel records every migration that has been run here. If a migration is missing from this list, it means it hasn't been applied yet.</p>
+
+<!-- ================================================== -->
+<h2>10 — Artisan shortcuts (from terminal, not MySQL shell)</h2>
+
+<p>These commands are typed in the terminal (not inside MySQL), from the <code class="inline">p-laravel/app</code> folder:</p>
+
+<table>
+  <tr><th>Command</th><th>What it does</th></tr>
+  <tr><td><code>php artisan migrate:status</code></td><td>Shows which migrations have been run and which haven't</td></tr>
+  <tr><td><code>php artisan migrate:fresh --seed</code></td><td>Drops all tables, recreates them, runs seeders — full reset</td></tr>
+  <tr><td><code>php artisan db:table users</code></td><td>Shows column structure of the users table</td></tr>
+  <tr><td><code>php artisan db:table appointments</code></td><td>Shows column structure of the appointments table</td></tr>
+  <tr><td><code>php artisan tinker</code></td><td>PHP REPL — run Laravel/Eloquent code interactively</td></tr>
+</table>
+
+<div class="cmd-label">Tinker examples (run inside php artisan tinker)</div>
+<pre><code>// Count all users
+App\Models\User::count();
+
+// See all appointments
+App\Models\Appointment::with('service','user')->get();
+
+// Find appointments for user ID 1
+App\Models\Appointment::where('user_id', 1)->get();</code></pre>
+
+<div class="ok">Tinker is the fastest way to run one-off queries without opening MySQL. Type <code class="inline">exit</code> to leave.</div>
+
+<br><br>
+<hr style="border:none;border-top:1px solid #e0e0e0;margin:24px 0">
+<p style="font-size:12px;color:#999;text-align:center">ARTIKULA — Laravel 13 / MySQL 9 / Sanctum SPA / PHPUnit &nbsp;|&nbsp; 2026</p>
+</body>
+</html>
