@@ -527,7 +527,7 @@ if ($count >= 3) {
     <td><strong style="color:#d97706">A02</strong></td>
     <td>Security Misconfiguration</td>
     <td><code>.env</code> poza repo (<code>.gitignore</code>). Na produkcji wymagane: <code>APP_DEBUG=false</code>, <code>SESSION_SECURE_COOKIE=true</code>, nagłówki HTTP (X-Frame-Options, CSP). W dev — konfiguracja lokalna jest odpowiednia.</td>
-    <td><code>.gitignore</code> : linia 1<br>(produkcja: zmiana w <code>.env</code>)</td>
+    <td><code>.gitignore</code> : linia 3<br>(produkcja: zmiana w <code>.env</code>)</td>
     <td style="color:#6b7280;text-align:center">— konfiguracja</td>
   </tr>
   <tr>
@@ -541,7 +541,7 @@ if ($count >= 3) {
     <td><strong style="color:#16a34a">A04</strong></td>
     <td>Cryptographic Failures</td>
     <td>Hasła hashowane bcrypt z <code>BCRYPT_ROUNDS=12</code>. Cast <code>'password' => 'hashed'</code> w modelu — plain text nigdy nie trafia do bazy. <code>APP_KEY</code> szyfruje sesje i cookies.</td>
-    <td><code>Models/User.php</code> : 16<br><code>phpunit.xml</code> : linia z BCRYPT_ROUNDS</td>
+    <td><code>Models/User.php</code> : 23<br><code>phpunit.xml</code> : linia 23</td>
     <td style="color:#6b7280;text-align:center">— strukturalne</td>
   </tr>
   <tr>
@@ -562,7 +562,7 @@ if ($count >= 3) {
     <td><strong style="color:#16a34a">A07</strong></td>
     <td>Authentication Failures</td>
     <td>Sanctum SPA + regeneracja sesji po logowaniu (<code>session()->regenerate()</code>). Rate limiting <code>throttle:6,1</code>. Silne hasło <code>Password::min(8)->uncompromised()</code>. Generyczny komunikat błędu. Wylogowanie unieważnia sesję.</td>
-    <td><code>Requests/RegisterRequest.php</code> : 16<br><code>Controllers/AuthController.php</code> : 19, 27, 38–39<br><code>routes/api.php</code> : 10</td>
+    <td><code>Requests/RegisterRequest.php</code> : 19<br><code>Controllers/AuthController.php</code> : 19, 29, 39<br><code>routes/api.php</code> : 10</td>
     <td style="color:#16a34a;text-align:center">✓ PHPUnit</td>
   </tr>
   <tr>

@@ -417,7 +417,7 @@ $response->assertStatus(422)
     <td><strong style="color:#d97706">A02</strong></td>
     <td>Security Misconfiguration</td>
     <td><code>.env</code> excluded from repo (<code>.gitignore</code>). In production: <code>APP_DEBUG=false</code>, <code>SESSION_SECURE_COOKIE=true</code>, HTTP headers (X-Frame-Options, CSP) must be added. Dev config is appropriate for local use.</td>
-    <td><code>.gitignore</code> : line 1<br>(production: <code>.env</code> values)</td>
+    <td><code>.gitignore</code> : line 3<br>(production: <code>.env</code> values)</td>
     <td style="color:#6b7280;text-align:center">— config</td>
   </tr>
   <tr>
@@ -431,7 +431,7 @@ $response->assertStatus(422)
     <td><strong style="color:#16a34a">A04</strong></td>
     <td>Cryptographic Failures</td>
     <td>Passwords hashed with bcrypt (<code>BCRYPT_ROUNDS=12</code>). The <code>'password' =&gt; 'hashed'</code> cast on the model means plain text never reaches the database. <code>APP_KEY</code> encrypts sessions and cookies.</td>
-    <td><code>Models/User.php</code> : 16<br><code>phpunit.xml</code> : BCRYPT_ROUNDS line</td>
+    <td><code>Models/User.php</code> : 23<br><code>phpunit.xml</code> : line 23</td>
     <td style="color:#6b7280;text-align:center">— structural</td>
   </tr>
   <tr>
@@ -452,7 +452,7 @@ $response->assertStatus(422)
     <td><strong style="color:#16a34a">A07</strong></td>
     <td>Authentication Failures</td>
     <td>Sanctum SPA + session regeneration after login. Rate limiting <code>throttle:6,1</code>. Strong password <code>Password::min(8)->uncompromised()</code> (checks HaveIBeenPwned). Generic error message on failed login. Logout invalidates session.</td>
-    <td><code>Requests/RegisterRequest.php</code> : 16<br><code>Controllers/AuthController.php</code> : 19, 27, 38–39<br><code>routes/api.php</code> : 10</td>
+    <td><code>Requests/RegisterRequest.php</code> : 19<br><code>Controllers/AuthController.php</code> : 19, 29, 39<br><code>routes/api.php</code> : 10</td>
     <td style="color:#16a34a;text-align:center">✓ PHPUnit</td>
   </tr>
   <tr>
