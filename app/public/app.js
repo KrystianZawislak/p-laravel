@@ -326,7 +326,7 @@ $(function () {
   /* time chips */
   function renderChips() {
     $('#time-chips').html(TIMES.map(t =>
-      `<div class="chip-sel${t === selTime ? ' on' : ''}" data-time="${t}">${t}</div>`
+      `<button type="button" class="chip-sel${t === selTime ? ' on' : ''}" data-time="${t}">${t}</button>`
     ).join(''));
   }
   renderChips();
