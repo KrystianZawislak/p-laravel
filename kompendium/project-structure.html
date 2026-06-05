@@ -120,82 +120,58 @@
 <!-- ================================================== -->
 <h2>Part 3 — Full file &amp; folder map</h2>
 
-<div class="tree">
-<span class="dir">p-laravel/app/</span>   ← all commands (php artisan, composer) run from here
-│
-├── <span class="dir">app/</span>                     ← your application code (the part YOU write)
-│   ├── <span class="dir">Http/</span>
-│   │   ├── <span class="dir">Controllers/</span>      ← receive requests, call models, return responses
-│   │   │   ├── <span class="file">AppointmentController.php</span>  <span class="tag tag-green">CRUD for appointments</span>
-│   │   │   ├── <span class="file">AuthController.php</span>          <span class="tag tag-green">register, login, logout</span>
-│   │   │   └── <span class="file">Controller.php</span>              <span class="tag">base class — shared traits</span>
-│   │   └── <span class="dir">Requests/</span>          ← validate input before controller runs
-│   │       ├── <span class="file">RegisterRequest.php</span>         <span class="tag tag-purple">email + strong password rules</span>
-│   │       ├── <span class="file">LoginRequest.php</span>            <span class="tag tag-purple">email + password required</span>
-│   │       ├── <span class="file">StoreAppointmentRequest.php</span> <span class="tag tag-purple">all appointment validation + limit</span>
-│   │       └── <span class="file">UpdateAppointmentRequest.php</span><span class="tag tag-purple">same rules for edit</span>
-│   ├── <span class="dir">Models/</span>               ← one class per database table
-│   │   ├── <span class="file">User.php</span>                     <span class="tag">maps to users table</span>
-│   │   ├── <span class="file">Appointment.php</span>              <span class="tag">maps to appointments table</span>
-│   │   └── <span class="file">Service.php</span>                  <span class="tag">maps to services table</span>
-│   ├── <span class="dir">Policies/</span>
-│   │   └── <span class="file">AppointmentPolicy.php</span>        <span class="tag tag-red">IDOR protection — ownership check</span>
-│   └── <span class="dir">Providers/</span>
-│       └── <span class="file">AppServiceProvider.php</span>       <span class="tag">boot hooks — registers the Policy</span>
-│
-├── <span class="dir">bootstrap/</span>
-│   └── <span class="file">app.php</span>                      <span class="tag tag-green">middleware + exception handling config</span>
-│
-├── <span class="dir">config/</span>                       ← framework configuration files
-│   ├── <span class="file">database.php</span>                 ← DB driver, host, port, name
-│   ├── <span class="file">sanctum.php</span>                  ← stateful domains list
-│   ├── <span class="file">session.php</span>                  ← session driver (database)
-│   └── <span class="file dim">app.php, auth.php, ...</span>       ← other framework config (rarely touched)
-│
-├── <span class="dir">database/</span>
-│   ├── <span class="dir">migrations/</span>               ← SQL table creation, tracked in git
-│   │   ├── <span class="file">..._create_users_table.php</span>
-│   │   ├── <span class="file">..._create_services_table.php</span>
-│   │   └── <span class="file">..._create_appointments_table.php</span>
-│   ├── <span class="dir">seeders/</span>
-│   │   └── <span class="file">DatabaseSeeder.php</span>           <span class="tag">inserts the 6 therapy services</span>
-│   ├── <span class="dir">factories/</span>
-│   │   └── <span class="file">UserFactory.php</span>              <span class="tag">generates fake users in tests</span>
-│   └── <span class="file">database.sqlite</span>              <span class="tag tag-orange">used ONLY by tests (in-memory)</span>
-│
-├── <span class="dir">public/</span>                       ← everything here is directly accessible by the browser
-│   ├── <span class="file">index.php</span>                    <span class="tag">Laravel entry point — all requests start here</span>
-│   ├── <span class="file">index.html</span>                   <span class="tag tag-green">the landing page / booking UI</span>
-│   ├── <span class="file">login.html</span>                   <span class="tag tag-green">login form → POST /api/login</span>
-│   ├── <span class="file">register.html</span>                <span class="tag tag-green">register form → POST /api/register</span>
-│   ├── <span class="file">app.js</span>                       <span class="tag tag-green">all frontend JS (jQuery + fetch)</span>
-│   ├── <span class="file">styles.css</span>                   <span class="tag tag-green">all CSS for the frontend</span>
-│   └── <span class="dir">frames/</span>                   ← 35 JPG frames for hero animation
-│
-├── <span class="dir">routes/</span>
-│   ├── <span class="file">api.php</span>                      <span class="tag tag-green">all /api/* endpoints — the API definition</span>
-│   ├── <span class="file">web.php</span>                      <span class="tag">serves the HTML page (mostly unused here)</span>
-│   └── <span class="file dim">console.php</span>                  <span class="tag dim">artisan command scheduling</span>
-│
-├── <span class="dir">storage/</span>
-│   ├── <span class="dir">logs/</span>
-│   │   └── <span class="file">laravel.log</span>              <span class="tag tag-red">error + security logs written here</span>
-│   └── <span class="dir dim">framework/</span>               ← cache, compiled views, session files
-│
-├── <span class="dir">tests/</span>
-│   └── <span class="dir">Feature/</span>
-│       ├── <span class="file">AuthTest.php</span>             <span class="tag tag-green">6 automated tests for auth</span>
-│       └── <span class="file">AppointmentTest.php</span>      <span class="tag tag-green">9 automated tests for CRUD</span>
-│
-├── <span class="file">.env</span>                          <span class="tag tag-red">secrets: DB password, app key — NOT in git</span>
-├── <span class="file">.env.example</span>                 <span class="tag">template for .env — IS in git</span>
-├── <span class="file">.gitignore</span>                    <span class="tag">tells git which files to ignore</span>
-├── <span class="file">artisan</span>                       <span class="tag">php artisan command runner</span>
-├── <span class="file">composer.json</span>                 <span class="tag">declares required packages + PHP version</span>
-├── <span class="file">composer.lock</span>                 <span class="tag tag-red">exact package versions — IS in git (security)</span>
-├── <span class="file">phpunit.xml</span>                   <span class="tag">test configuration (DB, env vars)</span>
-└── <span class="dir dim">vendor/</span>                       <span class="tag dim">downloaded packages — NOT in git (huge)</span>
-</div>
+<p>All commands (<code class="inline">php artisan</code>, <code class="inline">composer</code>) are run from the <code class="inline">p-laravel/app/</code> folder.</p>
+
+<table>
+  <tr style="background:#1a1a1a"><td colspan="2" style="color:#fff;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.08em;padding:8px 12px">BACKEND — app/ &nbsp;(the code YOU write)</td></tr>
+  <tr><td style="width:42%;font-family:monospace;font-size:12px;background:#f9f9f9"><code>Http/Controllers/AppointmentController.php</code></td><td>CRUD for appointments — index, store, update, destroy. Calls models and returns JSON.</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>Http/Controllers/AuthController.php</code></td><td>Register, login, logout. Manages Sanctum session lifecycle.</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>Http/Requests/StoreAppointmentRequest.php</code></td><td>Appointment validation: date, time, mode, max-3 limit, slot conflict check. Runs automatically before the controller.</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>Http/Requests/RegisterRequest.php</code></td><td>Registration rules: unique email, strong password (min 8 chars, not in breach databases).</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>Http/Requests/LoginRequest.php</code></td><td>Email and password are required on login.</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>Http/Requests/UpdateAppointmentRequest.php</code></td><td>Same rules as StoreAppointmentRequest, used when editing an appointment.</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>Models/User.php</code></td><td>Maps the <code>users</code> table. Cast <code>'password' =&gt; 'hashed'</code> automatically bcrypt-hashes the password on save.</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>Models/Appointment.php</code></td><td>Maps the <code>appointments</code> table. Relationships: belongsTo User, belongsTo Service.</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>Models/Service.php</code></td><td>Maps the <code>services</code> table. Read-only — services are inserted by the seeder.</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>Policies/AppointmentPolicy.php</code></td><td>Checks <code>user_id === auth()->id()</code> on edit and delete. IDOR protection.</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>Providers/AppServiceProvider.php</code></td><td>Registers AppointmentPolicy with Laravel so <code>$this->authorize()</code> works.</td></tr>
+
+  <tr style="background:#1a1a1a"><td colspan="2" style="color:#fff;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.08em;padding:8px 12px">FRONTEND — public/ &nbsp;(served directly to the browser)</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>public/index.html</code></td><td>The full site — hero, services, testimonials, booking form. The entire application UI.</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>public/login.html</code></td><td>Login form. Sends POST /api/login via Sanctum SPA flow.</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>public/register.html</code></td><td>Registration form. Sends POST /api/register.</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>public/app.js</code></td><td>All frontend JS (~450 lines). jQuery + fetch API. Handles auth state, booking CRUD, animations, marquee.</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>public/styles.css</code></td><td>All CSS — colors, animations, responsive layout, CSS custom properties.</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>public/frames/</code></td><td>35 JPG frames (f00.jpg–f34.jpg) for the scroll-driven lips animation in the hero section.</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>public/index.php</code></td><td>Laravel entry point. Every HTTP request passes through this file. Do not edit.</td></tr>
+
+  <tr style="background:#1a1a1a"><td colspan="2" style="color:#fff;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.08em;padding:8px 12px">DATABASE — database/</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>migrations/</code></td><td>Version-controlled schema history. Each file is one step: creating users, services, appointments tables. Run with <code>php artisan migrate</code>.</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>seeders/DatabaseSeeder.php</code></td><td>Inserts the 6 therapy services on first setup. Run with the <code>--seed</code> flag.</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>factories/UserFactory.php</code></td><td>Fake user generator. Used ONLY in PHPUnit tests (<code>User::factory()->create()</code>).</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>database.sqlite</code></td><td>SQLite database file. Used ONLY by tests — in-memory, isolated from MySQL.</td></tr>
+
+  <tr style="background:#1a1a1a"><td colspan="2" style="color:#fff;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.08em;padding:8px 12px">ROUTING &amp; CONFIGURATION</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>routes/api.php</code></td><td>Defines every <code>/api/*</code> endpoint: register, login, logout, user, appointments CRUD. Throttle and auth:sanctum middleware.</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>routes/web.php</code></td><td>Serves HTML files for routes <code>/</code>, <code>/login</code>, <code>/register</code>.</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>bootstrap/app.php</code></td><td>Middleware config (Sanctum stateful, CSRF) and exception handling (401 JSON for API).</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>config/database.php</code></td><td>Database driver (mysql), host, port, database name. Reads values from <code>.env</code>.</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>config/sanctum.php</code></td><td>List of trusted stateful domains. Must include the domain the frontend runs on.</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>phpunit.xml</code></td><td>Test config: in-memory SQLite, BCRYPT_ROUNDS=4 (fast), SANCTUM_STATEFUL_DOMAINS.</td></tr>
+
+  <tr style="background:#1a1a1a"><td colspan="2" style="color:#fff;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.08em;padding:8px 12px">TESTS — tests/Feature/</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>AuthTest.php</code></td><td>6 tests: register (201), strong password (422), unique email (422), login (200), wrong password (401), no session (401).</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>AppointmentTest.php</code></td><td>9 tests: create (201), data isolation, IDOR (403), past date (422), double booking (422), invalid time (422), limit exceeded (422).</td></tr>
+
+  <tr style="background:#1a1a1a"><td colspan="2" style="color:#fff;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.08em;padding:8px 12px">ROOT FILES</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#fff1f0"><code>.env</code></td><td><strong style="color:#991b1b">NOT in git.</strong> Secrets: DB password, APP_KEY, SANCTUM_STATEFUL_DOMAINS. Every developer has their own.</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>.env.example</code></td><td>Template for .env without real values. IS in git — acts as setup instructions for new developers.</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>composer.json</code></td><td>List of required PHP packages and the PHP version constraint. Read by <code>composer install</code>.</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f0fdf4"><code>composer.lock</code></td><td><strong style="color:#166534">IS in git.</strong> Frozen versions of all packages. Guarantees identical builds on every machine.</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>.gitignore</code></td><td>List of files git ignores: <code>.env</code>, <code>vendor/</code>, logs, cache.</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#fff7ed"><code>vendor/</code></td><td><strong style="color:#c2410c">NOT in git.</strong> Downloaded Composer packages (Laravel, Sanctum, PHPUnit…). Recreated by <code>composer install</code>.</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>storage/logs/laravel.log</code></td><td>Error and security warning logs written at runtime (e.g. failed login attempts — A09).</td></tr>
+</table>
 
 <!-- ================================================== -->
 <h2>Part 4 — Folder roles in one sentence each</h2>
