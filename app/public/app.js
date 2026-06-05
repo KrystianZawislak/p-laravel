@@ -94,6 +94,75 @@ $(function () {
     $('#nav').toggleClass('scrolled', window.scrollY > 40);
   }).trigger('scroll');
 
+  /* ---- HAMBURGER / MOBILE MENU ---- */
+  function renderMobAuth() {
+    if (currentUser) {
+      $('#mob-auth').html(`
+        <div style="display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:8px">
+          <span style="font-size:14px;color:var(--ink-soft);font-weight:500">${currentUser.name.split(' ')[0]}</span>
+          <button class="mob-link mob-cta" id="mob-logout">Wyloguj</button>
+        </div>
+      `);
+      $('#mob-logout').on('click', function () {
+        localStorage.removeItem('artikula_user');
+        window.location.reload();
+      });
+    } else {
+      $('#mob-auth').html(`
+        <a href="/login" class="mob-link mob-cta" style="margin-top:10px">Zaloguj się</a>
+      `);
+    }
+  }
+  renderMobAuth();
+
+  function closeMobileMenu() {
+    $('#hamburger').removeClass('open');
+    $('#mobile-menu').removeClass('open');
+    $('body').css('overflow', '');
+  }
+
+  $('#hamburger').on('click', function () {
+    const isOpen = $(this).hasClass('open');
+    if (isOpen) {
+      closeMobileMenu();
+    } else {
+      $(this).addClass('open');
+      $('#mobile-menu').addClass('open');
+      $('body').css('overflow', 'hidden');
+    }
+  });
+
+  /* close on any mob-link click, then scroll */
+  $(document).on('click', '.mob-link', function (e) {
+    const href = $(this).attr('href');
+    if (!href || !href.startsWith('#')) { closeMobileMenu(); return; }
+    e.preventDefault();
+    closeMobileMenu();
+    setTimeout(function () {
+      const target = document.getElementById(href.slice(1));
+      if (!target) return;
+      if (href === '#uslugi') {
+        const marqueeH = document.querySelector('.marquee')?.offsetHeight || 68;
+        scrollToWithOffset(target, 74 + marqueeH);
+      } else if (href === '#kontakt') {
+        scrollToWithOffset(target, 30);
+      } else {
+        scrollToWithOffset(target, 74);
+      }
+    }, 320);
+  });
+
+  $('#mob-close').on('click', closeMobileMenu);
+
+  $(document).on('keydown', function (e) {
+    if (e.key === 'Escape') closeMobileMenu();
+  });
+
+  /* disable card tilt on touch */
+  if ('ontouchstart' in window) {
+    $(document).off('mousemove', '.card').off('mouseleave', '.card');
+  }
+
   function scrollToWithOffset(el, offset) {
     const top = el.getBoundingClientRect().top + window.scrollY - offset;
     window.scrollTo({ top, behavior: 'smooth' });
@@ -107,7 +176,7 @@ $(function () {
 
   $('#nav-kontakt').on('click', function (e) {
     e.preventDefault();
-    scrollToWithOffset(document.getElementById('kontakt'), 0);
+    scrollToWithOffset(document.getElementById('kontakt'), 30);
   });
 
   /* ---- MARQUEE ---- */
@@ -174,7 +243,7 @@ $(function () {
     entries.forEach(e => {
       if (e.isIntersecting) { e.target.classList.add('in'); revealIO.unobserve(e.target); }
     });
-  }, { threshold: 0.16 });
+  }, { threshold: 0.06, rootMargin: '0px 0px 120px 0px' });
 
   function bindReveal() {
     document.querySelectorAll('.reveal:not(.in)').forEach(el => revealIO.observe(el));
@@ -238,13 +307,13 @@ $(function () {
   }).trigger('scroll.hero');
 
   /* ---- BOOKING CRUD (localStorage) ---- */
-  const seed = [
-    {id:1, name:'Anna Kowalska',    service:'Trening dykcji', date:todayPlus(2), time:'10:30', mode:'Gabinet'},
-    {id:2, name:'Marek Zieliński', service:'Emisja głosu',    date:todayPlus(5), time:'16:30', mode:'Online'},
-  ];
+  if (localStorage.getItem('artikula_v') !== '2') {
+    localStorage.removeItem('artikula_bookings');
+    localStorage.setItem('artikula_v', '2');
+  }
 
   let bookings = [];
-  try { bookings = JSON.parse(localStorage.getItem('artikula_bookings')) || seed; } catch(e) { bookings = seed; }
+  try { bookings = JSON.parse(localStorage.getItem('artikula_bookings')) || []; } catch(e) { bookings = []; }
 
   let editId    = null;
   let selTime   = '10:30';
