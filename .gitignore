@@ -12,7 +12,6 @@ Thumbs.db
 # Dependencies
 node_modules/
 vendor/
-composer.lock
 
 # Laravel
 backend/.env
