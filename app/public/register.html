@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Rejestracja — ARTIKULA</title>
+<link rel="stylesheet" href="styles.css" />
+<style>
+.auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px 22px}
+.auth-card{background:#fff;border-radius:20px;padding:48px 44px;width:100%;max-width:420px;
+  box-shadow:var(--shadow-soft)}
+.auth-logo{font-family:var(--serif);font-size:22px;font-weight:600;letter-spacing:.14em;
+  color:var(--ink);text-decoration:none;display:flex;align-items:center;gap:10px;margin-bottom:36px}
+.auth-logo .dot{width:8px;height:8px;border-radius:50%;background:var(--rose);display:inline-block}
+.auth-title{font-family:var(--serif);font-size:32px;font-weight:500;margin-bottom:6px}
+.auth-title em{font-style:italic;color:var(--rose-deep)}
+.auth-sub{font-size:14px;color:var(--ink-soft);margin-bottom:32px}
+.field{margin-bottom:18px}
+.field label{display:block;font-size:13px;font-weight:600;color:var(--ink-soft);
+  letter-spacing:.04em;margin-bottom:7px}
+.field input{width:100%;padding:12px 16px;border:1.5px solid var(--sand-deep);border-radius:10px;
+  font-family:var(--sans);font-size:15px;color:var(--ink);background:var(--cream);
+  transition:border-color .3s,box-shadow .3s;outline:none}
+.field input:focus{border-color:var(--rose);box-shadow:0 0 0 3px var(--rose-soft)}
+.field input.err{border-color:#e05555}
+.err-msg{font-size:12px;color:#c94444;margin-top:5px;display:none}
+.btn-full{width:100%;justify-content:center;margin-top:8px;padding:14px}
+.auth-footer{text-align:center;margin-top:24px;font-size:14px;color:var(--ink-soft)}
+.auth-footer a{color:var(--rose-deep);font-weight:600;text-decoration:none}
+.auth-footer a:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+<div class="grain"></div>
+<div class="auth-wrap">
+  <div class="auth-card">
+    <a href="/" class="auth-logo"><span class="dot"></span>ARTIKULA</a>
+    <h1 class="auth-title">Utwórz <em>konto</em></h1>
+    <p class="auth-sub">Dołącz do ARTIKULA i zarządzaj swoimi wizytami online.</p>
+
+    <div class="field">
+      <label for="f-name">Imię i nazwisko</label>
+      <input id="f-name" type="text" placeholder="np. Jan Kowalski" autocomplete="name" />
+      <div class="err-msg" id="err-name"></div>
+    </div>
+
+    <div class="field">
+      <label for="f-email">Adres e-mail</label>
+      <input id="f-email" type="email" placeholder="np. jan@example.com" autocomplete="email" />
+      <div class="err-msg" id="err-email"></div>
+    </div>
+
+    <div class="field">
+      <label for="f-password">Hasło</label>
+      <input id="f-password" type="password" placeholder="min. 8 znaków" autocomplete="new-password" />
+      <div class="err-msg" id="err-password"></div>
+    </div>
+
+    <div class="field">
+      <label for="f-confirm">Powtórz hasło</label>
+      <input id="f-confirm" type="password" placeholder="••••••••" autocomplete="new-password" />
+      <div class="err-msg" id="err-confirm"></div>
+    </div>
+
+    <button class="btn btn-rose btn-full" id="btn-register">Zarejestruj się</button>
+
+    <div class="auth-footer">
+      Masz już konto? <a href="/login">Zaloguj się</a>
+    </div>
+    <div class="auth-footer" style="margin-top:12px">
+      <a href="/" style="color:var(--ink-soft);font-weight:400">← Wróć na stronę główną</a>
+    </div>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script>
+$(function () {
+  function validate() {
+    let ok = true;
+    const name  = $('#f-name').val().trim();
+    const email = $('#f-email').val().trim();
+    const pass  = $('#f-password').val();
+    const conf  = $('#f-confirm').val();
+    $('.err-msg').hide();
+    $('input').removeClass('err');
+
+    if (!name || name.length < 3) {
+      $('#err-name').text('Podaj imię i nazwisko (min. 3 znaki)').show();
+      $('#f-name').addClass('err'); ok = false;
+    }
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      $('#err-email').text('Podaj poprawny adres e-mail').show();
+      $('#f-email').addClass('err'); ok = false;
+    }
+    if (!pass || pass.length < 8) {
+      $('#err-password').text('Hasło musi mieć min. 8 znaków').show();
+      $('#f-password').addClass('err'); ok = false;
+    }
+    if (pass !== conf) {
+      $('#err-confirm').text('Hasła nie są identyczne').show();
+      $('#f-confirm').addClass('err'); ok = false;
+    }
+    return ok;
+  }
+
+  $('#btn-register').on('click', function () {
+    if (!validate()) return;
+
+    // TODO: replace with real API call
+    const user = { name: $('#f-name').val().trim(), email: $('#f-email').val().trim() };
+    localStorage.setItem('artikula_user', JSON.stringify(user));
+    window.location.href = '/';
+  });
+
+  $('input').on('keydown', function (e) {
+    if (e.key === 'Enter') $('#btn-register').trigger('click');
+  });
+});
+</script>
+</body>
+</html>
