@@ -165,7 +165,7 @@ body{
 
 /* floating accent */
 .float{animation:float 7s var(--ease) infinite}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-16px)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
 
 /* ---- stats ---- */
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
@@ -257,14 +257,15 @@ body{
 .toast .tdot{width:7px;height:7px;border-radius:50%;background:var(--rose)}
 
 /* ---- testimonials ---- */
-.quotes{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
-@media(max-width:880px){.quotes{grid-template-columns:1fr}}
-.quote{background:var(--cream);border:1px solid var(--sand-deep);border-radius:26px;padding:28px;
+.quotes{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+@media(max-width:880px){.quotes{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.quotes{grid-template-columns:1fr}}
+.quote{background:var(--cream);border:1px solid var(--sand-deep);border-radius:22px;padding:24px;
   transition:transform .6s var(--ease-out),box-shadow .6s;display:flex;flex-direction:column}
-.quote:hover{transform:translateY(-8px) rotate(1deg);box-shadow:var(--shadow-soft)}
-.quote .stars{color:var(--rose);letter-spacing:3px;font-size:14px;margin-bottom:16px}
-.quote p{font-family:var(--serif);font-size:21px;line-height:1.4;color:var(--ink);font-style:italic}
-.quote .who{margin-top:22px;display:flex;align-items:center;gap:12px}
+.quote:hover{transform:translateY(-6px) rotate(.8deg);box-shadow:var(--shadow-soft)}
+.quote .stars{color:var(--rose);letter-spacing:3px;font-size:13px;margin-bottom:12px}
+.quote p{font-family:var(--serif);font-size:18px;line-height:1.4;color:var(--ink);font-style:italic;flex:1}
+.quote .who{margin-top:16px;display:flex;align-items:center;gap:10px}
 .quote .av{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--rose-soft),var(--taupe));
   display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-weight:600;color:var(--ink)}
 .quote .who .nm{font-size:14px;font-weight:600}

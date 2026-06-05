@@ -61,6 +61,9 @@ $(function () {
     {q:'Po latach unikania prezentacji wreszcie mówię bez stresu. Głos brzmi pełniej, a ja pewniej.',n:'Joanna R.',r:'menedżerka'},
     {q:'Syn w pół roku pokonał seplenienie. Terapia w formie zabawy — czekał na każde spotkanie.',n:'Tomasz W.',r:'tata Antka, 6 lat'},
     {q:'Jako nauczycielka traciłam głos co semestr. Emisja głosu zmieniła moją pracę o 180 stopni.',n:'Magda K.',r:'nauczycielka'},
+    {q:'Rotacyzm mojego syna zniknął w 4 miesiące. Polecam każdemu rodzicowi, który szuka skutecznej pomocy.',n:'Karolina S.',r:'mama Kuby, 8 lat'},
+    {q:'Przygotowywałem się do konferencji TED. Trening dykcji dał mi pewność siebie, której brakowało.',n:'Piotr M.',r:'przedsiębiorca'},
+    {q:'Trafiłam tu z problemem jąkania. Dziś prowadzę szkolenia bez strachu — to niesamowita zmiana.',n:'Aleksandra W.',r:'trenerka biznesu'},
   ];
 
   /* ---- HELPERS ---- */
@@ -98,7 +101,8 @@ $(function () {
 
   $('#nav-uslugi').on('click', function (e) {
     e.preventDefault();
-    scrollToWithOffset(document.getElementById('uslugi'), 80);
+    const marqueeH = document.querySelector('.marquee')?.offsetHeight || 74;
+    scrollToWithOffset(document.getElementById('uslugi'), 74 + marqueeH);
   });
 
   $('#nav-kontakt').on('click', function (e) {
