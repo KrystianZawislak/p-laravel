@@ -369,7 +369,7 @@ body{
 @media(max-width:900px){
   /* booking form date+mode always stacked below 900px (covers iPad portrait 768px) */
   .field[style*="grid-template-columns"]{display:block!important}
-  .field[style*="grid-template-columns"] > div{overflow:hidden;min-width:0}
+  .field[style*="grid-template-columns"] > div{min-width:0}
   .field[style*="grid-template-columns"] > div + div{margin-top:12px}
   #f-date{max-width:100%;width:100%;box-sizing:border-box}
 
