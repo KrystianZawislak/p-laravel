@@ -91,6 +91,21 @@ $(function () {
     $('#nav').toggleClass('scrolled', window.scrollY > 40);
   }).trigger('scroll');
 
+  function scrollToWithOffset(el, offset) {
+    const top = el.getBoundingClientRect().top + window.scrollY - offset;
+    window.scrollTo({ top, behavior: 'smooth' });
+  }
+
+  $('#nav-uslugi').on('click', function (e) {
+    e.preventDefault();
+    scrollToWithOffset(document.getElementById('uslugi'), 80);
+  });
+
+  $('#nav-kontakt').on('click', function (e) {
+    e.preventDefault();
+    scrollToWithOffset(document.getElementById('kontakt'), 0);
+  });
+
   /* ---- MARQUEE ---- */
   const words = ['Artykulacja','Dykcja','Emisja głosu','Wymowa','Pewność','Oddech','Rezonans','Ekspresja'];
   const row = [...words, ...words];
