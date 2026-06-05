@@ -154,7 +154,7 @@ body{
 /* ---- marquee ---- */
 .marquee{border-top:1px solid var(--sand-deep);border-bottom:1px solid var(--sand-deep);
   padding:22px 0;overflow:hidden;background:var(--cream-2);position:relative;z-index:6}
-.marquee-track{display:flex;gap:0;white-space:nowrap;width:max-content;animation:slide 34s linear infinite}
+.marquee-track{display:flex;gap:0;white-space:nowrap;width:max-content;animation:slide 34s linear infinite;will-change:transform}
 .marquee:hover .marquee-track{animation-play-state:paused}
 .marquee-track span{font-family:var(--serif);font-style:italic;font-size:30px;color:var(--ink);
   padding:0 30px;display:inline-flex;align-items:center;gap:30px}
