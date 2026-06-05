@@ -1,9 +1,8 @@
 # ARTIKULA — Plan backendu (OWASP Top 10 2025)
 
-> Stan faktyczny (sprawdzony 2026-06-05): **Laravel 13.8**, PHP ^8.3 (uruchamiane `php85` przez Herd),
-> baza **SQLite** (`DB_CONNECTION=sqlite`), sesje w bazie (`SESSION_DRIVER=database`).
-> Brak Sanctum, brak `routes/api.php`, brak kontrolerów. Tylko model `User` + 3 domyślne migracje.
-> Frontend (login/register/booking) używa `localStorage` jako mocka.
+> Stan faktyczny (sprawdzony 2026-06-05): **Laravel 13.14**, PHP 8.5 przez Herd (`php85`),
+> baza **MySQL 9.6** (Homebrew), sesje w bazie (`SESSION_DRIVER=database`).
+> Branch roboczy: `feature/backend-api`.
 
 ---
 
@@ -20,14 +19,16 @@
 
 ## Kolejność pracy
 
-1. Instalacja API + Sanctum, konfiguracja `bootstrap/app.php`
-2. Migracje: `appointments` (+ ewentualnie kolumny audytowe)
-3. Modele + relacje (`User hasMany Appointment`)
-4. Auth: register / login / logout + walidacja + rate limiting
-5. CRUD appointments + Policy (Broken Access Control) + walidacja konfliktów
-6. Hardening OWASP (lista niżej) + logowanie zdarzeń
-7. Testy (Pest/PHPUnit) — przynajmniej auth + access control
-8. Podpięcie frontendu (fetch zamiast localStorage)
+- [✅] Instalacja Sanctum (`install:api`), powstał `routes/api.php`
+- [✅] Migracje: `users` (bez name), `services`, `appointments` — tabele w MySQL
+- [✅] `composer.lock` w repo, `.gitignore` poprawiony
+- [  ] Modele: `Service`, `Appointment` + relacje w `User`
+- [  ] Seeder: wpisanie 6 usług do tabeli `services`
+- [  ] Auth: register / login / logout + walidacja + rate limiting
+- [  ] CRUD appointments + Policy (Broken Access Control) + walidacja konfliktów
+- [  ] Hardening OWASP (nagłówki, logowanie zdarzeń)
+- [  ] Testy (Pest/PHPUnit) — auth + access control
+- [  ] Podpięcie frontendu (fetch zamiast localStorage)
 
 ---
 
