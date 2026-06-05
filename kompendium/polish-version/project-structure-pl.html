@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ARTIKULA — Struktura projektu i stack</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 14px; color: #1a1a1a; line-height: 1.7; background: #fff; padding: 48px; max-width: 900px; margin: 0 auto; }
+  h1 { font-size: 28px; font-weight: 700; margin-bottom: 4px; letter-spacing: -0.5px; }
+  .subtitle { font-size: 14px; color: #666; margin-bottom: 40px; }
+  h2 { font-size: 16px; font-weight: 700; margin: 40px 0 14px; padding-bottom: 6px; border-bottom: 2px solid #e8e8e8; text-transform: uppercase; letter-spacing: 0.05em; color: #111; }
+  h3 { font-size: 14px; font-weight: 700; margin: 24px 0 8px; color: #222; }
+  p { margin-bottom: 10px; color: #444; }
+  .inline { background: #f0f0f0; padding: 1px 6px; border-radius: 3px; font-family: monospace; font-size: 12.5px; }
+  .note { background: #fffbeb; border-left: 3px solid #f59e0b; padding: 10px 14px; margin: 10px 0; border-radius: 0 6px 6px 0; font-size: 13px; color: #555; }
+  .def { background: #f8f8ff; border: 1px solid #d0d0f0; border-radius: 8px; padding: 16px 20px; margin: 12px 0; }
+  .def strong { display: block; font-size: 15px; margin-bottom: 6px; color: #1a1a1a; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0 20px; font-size: 13px; }
+  th { background: #f4f4f4; padding: 8px 12px; text-align: left; font-weight: 700; border: 1px solid #e0e0e0; }
+  td { padding: 8px 12px; border: 1px solid #e0e0e0; color: #444; vertical-align: top; }
+  .tree { font-family: 'SF Mono', Consolas, monospace; font-size: 12.5px; background: #f4f4f4; border: 1px solid #e0e0e0; border-radius: 6px; padding: 16px 20px; line-height: 1.9; }
+  .tree .dir { color: #1a1a1a; font-weight: 700; }
+  .tree .file { color: #1a1a1a; }
+  .tree .dim { color: #999; }
+  .tree .tag { display: inline-block; background: #dbeafe; color: #1d4ed8; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 3px; margin-left: 8px; vertical-align: middle; }
+  .tree .tag-green { background: #dcfce7; color: #166534; }
+  .tree .tag-red { background: #fee2e2; color: #991b1b; }
+  .tree .tag-purple { background: #f3e8ff; color: #7c3aed; }
+  .tree .tag-orange { background: #ffedd5; color: #c2410c; }
+  .flow { display: flex; flex-direction: column; gap: 0; margin: 16px 0; }
+  .flow-step { display: flex; align-items: flex-start; gap: 14px; }
+  .flow-left { display: flex; flex-direction: column; align-items: center; }
+  .flow-num { flex-shrink: 0; width: 28px; height: 28px; background: #1a1a1a; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
+  .flow-line { width: 2px; flex: 1; background: #e0e0e0; min-height: 16px; }
+  .flow-body { flex: 1; padding: 3px 0 20px; font-size: 13px; color: #444; }
+  .flow-body strong { color: #1a1a1a; display: block; margin-bottom: 2px; }
+  @media print { body { padding: 20px; font-size: 12px; } .def { break-inside: avoid; } h2 { break-before: auto; } }
+</style>
+</head>
+<body>
+
+<h1>ARTIKULA — Struktura projektu i stack</h1>
+<p class="subtitle">Czym jest każda technologia, do czego służy każdy plik i jak to wszystko ze sobą współpracuje</p>
+
+<!-- ================================================== -->
+<h2>Część 1 — Stack technologiczny</h2>
+
+<div class="def">
+  <strong>PHP — język programowania</strong>
+  PHP to język w którym napisany jest backend. Działa po stronie serwera. Kiedy przychodzi żądanie (np. POST /api/login), serwer wykonuje kod PHP, rozmawia z bazą danych i zwraca odpowiedź. PHP jest najstarszym i najbardziej rozpowszechnionym serwerowym językiem — napędza WordPress, Wikipedię, oryginalny kod Facebooka. Tu używamy wersji 8.5 (przez Laravel Herd).
+</div>
+
+<div class="def">
+  <strong>Laravel — framework PHP</strong>
+  Laravel to zestaw gotowych narzędzi i konwencji do budowania aplikacji webowych w PHP. Zamiast pisać surowe PHP od zera (ręczne łączenie z MySQL, ręczna walidacja, ręczne odpowiedzi HTTP), Laravel dostarcza: routing, walidację żądań, ORM, uwierzytelnianie, sesje, infrastrukturę testową i wiele więcej. Myśl o nim jak o rusztowaniu. Tu używamy wersji 13.
+</div>
+
+<div class="def">
+  <strong>Composer — menadżer paczek PHP</strong>
+  Composer pobiera i zarządza bibliotekami PHP. Jak <code class="inline">npm</code> dla Node lub <code class="inline">pip</code> dla Pythona. Kiedy uruchamiasz <code class="inline">composer install</code>, czyta <code class="inline">composer.json</code> i pobiera wszystkie wymienione paczki do folderu <code class="inline">vendor/</code>. Plik <code class="inline">composer.lock</code> blokuje dokładne wersje żeby każdy developer dostał ten sam kod.
+</div>
+
+<div class="def">
+  <strong>MySQL — relacyjna baza danych</strong>
+  MySQL przechowuje trwałe dane: użytkowników, wizyty, usługi. Dane są zorganizowane w tabelach z wierszami i kolumnami — jak arkusze kalkulacyjne połączone kluczami obcymi. Aplikacja rozmawia z MySQL przez Eloquent ORM. Tu używamy wersji 9.6 (przez Homebrew).
+</div>
+
+<div class="def">
+  <strong>Laravel Sanctum — biblioteka uwierzytelniania</strong>
+  Sanctum to paczka Laravel obsługująca sesje logowania. W trybie SPA (stateful) — tym który tu używamy — działa przez ciasteczka: przeglądarka dostaje ciasteczko <code class="inline">laravel_session</code> po zalogowaniu i wysyła je automatycznie przy każdym kolejnym żądaniu. Nie potrzeba tokenów API. Ciasteczko <code class="inline">XSRF-TOKEN</code> to dodatkowa warstwa ochrony CSRF.
+</div>
+
+<div class="def">
+  <strong>Eloquent ORM — warstwa abstrakcji bazy danych</strong>
+  ORM to Object-Relational Mapper. Eloquent pozwala pracować z rekordami bazy jako obiektami PHP zamiast pisać surowy SQL. <code class="inline">Appointment::where('user_id', 1)->get()</code> to Eloquent — generuje <code class="inline">SELECT * FROM appointments WHERE user_id = 1</code> za kulisami, jako PDO prepared statement (bezpieczne na SQL injection).
+</div>
+
+<div class="def">
+  <strong>PHPUnit — framework testowy</strong>
+  PHPUnit uruchamia automatyczne testy. Laravel owija go pomocnikami jak <code class="inline">postJson()</code>, <code class="inline">actingAs()</code> i <code class="inline">assertStatus()</code>. Testy działają na tymczasowej bazie SQLite w pamięci — nigdy nie dotykają twoich danych MySQL. Komenda: <code class="inline">php artisan test</code>.
+</div>
+
+<!-- ================================================== -->
+<h2>Część 2 — Przepływ żądania</h2>
+
+<p>Co się dzieje kiedy przeglądarka wysyła POST na <code class="inline">/api/appointments</code>:</p>
+
+<div class="flow">
+  <div class="flow-step">
+    <div class="flow-left"><div class="flow-num">1</div><div class="flow-line"></div></div>
+    <div class="flow-body"><strong>public/index.php — punkt wejścia</strong>Laravel bootuje z tego jednego pliku. Każde żądanie HTTP — bez względu na URL — trafia tu najpierw. Ładuje framework i przekazuje kontrolę do routera.</div>
+  </div>
+  <div class="flow-step">
+    <div class="flow-left"><div class="flow-num">2</div><div class="flow-line"></div></div>
+    <div class="flow-body"><strong>bootstrap/app.php — middleware</strong>Sanctum stateful middleware sprawdza: czy żądanie ma poprawne ciasteczko sesji? Jeśli nie — 401. Jeśli tak — zalogowany użytkownik jest wczytywany. Tu też sprawdzany jest token CSRF.</div>
+  </div>
+  <div class="flow-step">
+    <div class="flow-left"><div class="flow-num">3</div><div class="flow-line"></div></div>
+    <div class="flow-body"><strong>routes/api.php — dopasowanie trasy</strong>Router sprawdza: która metoda kontrolera obsługuje POST /api/appointments? Odpowiedź: <code class="inline">AppointmentController@store</code>. Tu też sprawdzany jest limit throttle.</div>
+  </div>
+  <div class="flow-step">
+    <div class="flow-left"><div class="flow-num">4</div><div class="flow-line"></div></div>
+    <div class="flow-body"><strong>Requests/StoreAppointmentRequest.php — walidacja</strong>Zanim kontroler się uruchomi, Form Request waliduje każde pole. Data w przeszłości? Odrzuć. Godzina spoza listy? Odrzuć. Termin zajęty? Odrzuć. Więcej niż 3 wizyty? Odrzuć. Jeśli cokolwiek nie przejdzie → odpowiedź 422 JSON jest wysyłana natychmiast.</div>
+  </div>
+  <div class="flow-step">
+    <div class="flow-left"><div class="flow-num">5</div><div class="flow-line"></div></div>
+    <div class="flow-body"><strong>Controllers/AppointmentController.php — logika biznesowa</strong>Metoda <code class="inline">store()</code> się uruchamia. Wywołuje <code class="inline">Appointment::create([...])</code>. Gotowe.</div>
+  </div>
+  <div class="flow-step">
+    <div class="flow-left"><div class="flow-num">6</div><div class="flow-line"></div></div>
+    <div class="flow-body"><strong>Models/Appointment.php — Eloquent zapisuje do MySQL</strong>Model tłumaczy obiekt PHP na instrukcję INSERT SQL i wykonuje ją przez PDO. Nowy rekord jest zwracany.</div>
+  </div>
+  <div class="flow-step">
+    <div class="flow-left"><div class="flow-num">7</div><div class="flow-line"></div></div>
+    <div class="flow-body"><strong>Odpowiedź JSON wysyłana do przeglądarki</strong><code class="inline">return response()->json($appointment, 201)</code> — nowa wizyta jest serializowana do JSON i odsyłana z HTTP 201 Created.</div>
+  </div>
+</div>
+
+<!-- ================================================== -->
+<h2>Część 3 — Mapa plików i folderów</h2>
+
+<p>Wszystkie komendy (<code class="inline">php artisan</code>, <code class="inline">composer</code>) uruchamia się z folderu <code class="inline">p-laravel/app/</code>.</p>
+
+<table>
+  <tr style="background:#1a1a1a"><td colspan="2" style="color:#fff;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.08em;padding:8px 12px">BACKEND — app/ &nbsp;(kod który TY piszesz)</td></tr>
+  <tr><td style="width:42%;font-family:monospace;font-size:12px;background:#f9f9f9"><code>Http/Controllers/AppointmentController.php</code></td><td>CRUD wizyt — index, store, update, destroy. Wywołuje modele i zwraca JSON.</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>Http/Controllers/AuthController.php</code></td><td>Rejestracja, logowanie, wylogowanie. Zarządza sesją Sanctum.</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>Http/Requests/StoreAppointmentRequest.php</code></td><td>Walidacja wizyt: data, godzina, tryb, limit 3, konflikt terminów. Uruchamia się automatycznie przed kontrolerem.</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>Http/Requests/RegisterRequest.php</code></td><td>Wymagania przy rejestracji: unikalny email, silne hasło (min 8 znaków, nieszkompromitowane).</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>Http/Requests/LoginRequest.php</code></td><td>Email i hasło są wymagane przy logowaniu.</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>Http/Requests/UpdateAppointmentRequest.php</code></td><td>Te same reguły co StoreAppointmentRequest, używane przy edycji wizyty.</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>Models/User.php</code></td><td>Mapuje tabelę <code>users</code>. Cast <code>'password' =&gt; 'hashed'</code> automatycznie hashuje hasło bcryptem.</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>Models/Appointment.php</code></td><td>Mapuje tabelę <code>appointments</code>. Relacje: belongsTo User, belongsTo Service.</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>Models/Service.php</code></td><td>Mapuje tabelę <code>services</code>. Tylko odczyt — usługi są wstawiane przez seeder.</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>Policies/AppointmentPolicy.php</code></td><td>Sprawdza czy <code>user_id === auth()->id()</code> przy edycji i usuwaniu. Ochrona przed IDOR.</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>Providers/AppServiceProvider.php</code></td><td>Rejestruje AppointmentPolicy w Laravelu żeby <code>$this->authorize()</code> działało.</td></tr>
+
+  <tr style="background:#1a1a1a"><td colspan="2" style="color:#fff;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.08em;padding:8px 12px">FRONTEND — public/ &nbsp;(dostępne bezpośrednio z przeglądarki)</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>public/index.html</code></td><td>Strona główna — hero, usługi, opinie, formularz rezerwacji. Cały interfejs aplikacji.</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>public/login.html</code></td><td>Formularz logowania. Wysyła POST /api/login przez Sanctum SPA.</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>public/register.html</code></td><td>Formularz rejestracji. Wysyła POST /api/register.</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>public/app.js</code></td><td>Cały frontend JS (~450 linii). jQuery + fetch API. Obsługuje auth, CRUD wizyt, animacje, marquee.</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>public/styles.css</code></td><td>Cały CSS — kolory, animacje, układ responsywny, zmienne CSS.</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>public/frames/</code></td><td>35 klatek JPG (f00.jpg–f34.jpg) do animacji ust w sekcji hero. Sterowane scrollem.</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>public/index.php</code></td><td>Punkt wejścia Laravel. Każde żądanie HTTP przechodzi przez ten plik. Nie edytować.</td></tr>
+
+  <tr style="background:#1a1a1a"><td colspan="2" style="color:#fff;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.08em;padding:8px 12px">BAZA DANYCH — database/</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>migrations/</code></td><td>Historia struktury bazy w git. Każdy plik to jeden krok: tworzenie tabeli users, services, appointments. Uruchamiane przez <code>php artisan migrate</code>.</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>seeders/DatabaseSeeder.php</code></td><td>Wstawia 6 usług logopedycznych przy pierwszym setupie. Uruchamiany przez <code>--seed</code>.</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>factories/UserFactory.php</code></td><td>Generator fałszywych użytkowników. Używany TYLKO w testach PHPUnit (<code>User::factory()->create()</code>).</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>database.sqlite</code></td><td>Plik bazy SQLite. Używany TYLKO przez testy — w pamięci, izolowany od MySQL.</td></tr>
+
+  <tr style="background:#1a1a1a"><td colspan="2" style="color:#fff;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.08em;padding:8px 12px">ROUTING I KONFIGURACJA</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>routes/api.php</code></td><td>Definicja wszystkich endpointów <code>/api/*</code>: register, login, logout, user, appointments CRUD. Middleware throttle i auth:sanctum.</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>routes/web.php</code></td><td>Serwuje pliki HTML dla tras <code>/</code>, <code>/login</code>, <code>/register</code>.</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>bootstrap/app.php</code></td><td>Konfiguracja middleware (Sanctum stateful, CSRF) i obsługa wyjątków (401 JSON dla API).</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>config/database.php</code></td><td>Sterownik bazy (mysql), host, port, nazwa bazy. Czyta wartości z <code>.env</code>.</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>config/sanctum.php</code></td><td>Lista zaufanych domen (stateful_domains). Musi zawierać domenę z której wysyłane są żądania.</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>phpunit.xml</code></td><td>Konfiguracja testów: baza SQLite w pamięci, BCRYPT_ROUNDS=4 (szybkie), SANCTUM_STATEFUL_DOMAINS.</td></tr>
+
+  <tr style="background:#1a1a1a"><td colspan="2" style="color:#fff;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.08em;padding:8px 12px">TESTY — tests/Feature/</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>AuthTest.php</code></td><td>6 testów: rejestracja (201), silne hasło (422), unikalny email (422), logowanie (200), złe hasło (401), brak sesji (401).</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>AppointmentTest.php</code></td><td>9 testów: tworzenie (201), izolacja danych, IDOR (403), data z przeszłości (422), podwójna rezerwacja (422), zła godzina (422), limit 3 (422).</td></tr>
+
+  <tr style="background:#1a1a1a"><td colspan="2" style="color:#fff;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.08em;padding:8px 12px">PLIKI GŁÓWNE</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#fff1f0"><code>.env</code></td><td><strong style="color:#991b1b">NIE w git.</strong> Sekrety: hasło do bazy, APP_KEY, SANCTUM_STATEFUL_DOMAINS. Każdy developer ma swój własny.</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>.env.example</code></td><td>Szablon .env bez prawdziwych wartości. Jest w git — służy jako instrukcja dla nowego developera.</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>composer.json</code></td><td>Lista wymaganych paczek PHP i wersja PHP. Czytany przez <code>composer install</code>.</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f0fdf4"><code>composer.lock</code></td><td><strong style="color:#166534">JEST w git.</strong> Zamrożone wersje wszystkich paczek. Gwarantuje identyczny build na każdej maszynie.</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>.gitignore</code></td><td>Lista plików pomijanych przez git: <code>.env</code>, <code>vendor/</code>, logi, cache.</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#fff7ed"><code>vendor/</code></td><td><strong style="color:#c2410c">NIE w git.</strong> Pobrane paczki Composer (Laravel, Sanctum, PHPUnit…). Odtwarzane przez <code>composer install</code>.</td></tr>
+  <tr><td style="font-family:monospace;font-size:12px;background:#f9f9f9"><code>storage/logs/laravel.log</code></td><td>Logi błędów i ostrzeżeń bezpieczeństwa (np. nieudane próby logowania — A09).</td></tr>
+</table>
+
+<!-- ================================================== -->
+<h2>Część 4 — Rola każdego folderu w jednym zdaniu</h2>
+
+<table>
+  <tr><th style="width:210px">Folder / Plik</th><th>Rola</th></tr>
+  <tr><td><code>app/Http/Controllers/</code></td><td>Przyjmuje żądanie, wywołuje model, zwraca odpowiedź. Powinny być cienkie — bez logiki biznesowej.</td></tr>
+  <tr><td><code>app/Http/Requests/</code></td><td>Waliduje każde przychodzące żądanie zanim kontroler je zobaczy. Jeśli niepoprawne, 422 jest zwracane automatycznie.</td></tr>
+  <tr><td><code>app/Models/</code></td><td>Każda klasa reprezentuje jedną tabelę bazy. Wszystkie odczyty i zapisy do bazy przechodzą przez tutaj.</td></tr>
+  <tr><td><code>app/Policies/</code></td><td>Reguły autoryzacji — "czy ten użytkownik może wykonać tę akcję na tym zasobie?" Wywoływane przez <code>$this->authorize()</code>.</td></tr>
+  <tr><td><code>bootstrap/app.php</code></td><td>Konfiguracja aplikacji: które middleware zastosować, jak obsługiwać wyjątki.</td></tr>
+  <tr><td><code>config/</code></td><td>Ustawienia frameworka dla bazy danych, sesji, maila itp. Tylko do odczytu w trakcie działania.</td></tr>
+  <tr><td><code>database/migrations/</code></td><td>Historia schematu bazy danych pod kontrolą wersji. Uruchamiane przez <code>php artisan migrate</code>.</td></tr>
+  <tr><td><code>database/seeders/</code></td><td>Wstawiają dane startowe/testowe do bazy. Uruchamiane z flagą <code>--seed</code> przy migrate.</td></tr>
+  <tr><td><code>database/factories/</code></td><td>Generatory fałszywych danych tylko dla testów. Używane przez <code>User::factory()->create()</code> w PHPUnit.</td></tr>
+  <tr><td><code>public/</code></td><td>Jedyny folder który serwer webowy udostępnia. Wszystkie pliki dostępne przez przeglądarkę (HTML, JS, CSS) są tu.</td></tr>
+  <tr><td><code>routes/api.php</code></td><td>Definiuje każdy endpoint API: URL, metoda HTTP, który kontroler go obsługuje, które middleware jest stosowane.</td></tr>
+  <tr><td><code>storage/logs/</code></td><td>Pliki logów zapisywane przez aplikację w trakcie działania. <code>laravel.log</code> przechwytuje błędy i ostrzeżenia bezpieczeństwa.</td></tr>
+  <tr><td><code>tests/Feature/</code></td><td>Automatyczne testy integracyjne. Każdy test symuluje pełne żądanie HTTP i sprawdza odpowiedź oraz stan bazy.</td></tr>
+  <tr><td><code>vendor/</code></td><td>Wszystkie pobrane paczki Composer (Laravel, Sanctum, PHPUnit…). Ignorowane przez git. Odtwarzane przez <code>composer install</code>.</td></tr>
+  <tr><td><code>.env</code></td><td>Sekrety specyficzne dla środowiska: hasło bazy, klucz aplikacji, konfiguracja domeny. Nigdy nie commitowane do git.</td></tr>
+  <tr><td><code>composer.lock</code></td><td>Dokładne wersje każdej paczki. Commitowane do git — zapewnia reprodukowalne buildy na każdej maszynie.</td></tr>
+  <tr><td><code>phpunit.xml</code></td><td>Konfiguracja PHPUnit: jaka baza dla testów, nadpisania zmiennych środowiskowych (SQLite, BCRYPT_ROUNDS).</td></tr>
+</table>
+
+<!-- ================================================== -->
+<h2>Część 5 — Czego NIE ma w tym projekcie, a normalnie jest w Laravel</h2>
+
+<p>Standardowa aplikacja Laravel ma więcej funkcji. Celowo je pominęliśmy bo nie były potrzebne:</p>
+
+<table>
+  <tr><th>Funkcja</th><th>Dlaczego pominięta</th></tr>
+  <tr><td>Szablony Blade (<code>resources/views/</code>)</td><td>Frontend to zwykły HTML w <code>public/</code> — nie potrzeba szablonów renderowanych po stronie serwera</td></tr>
+  <tr><td>Vite / Node.js build step</td><td>Brak bundlowania JS — frontend używa vanilla JS + CDN jQuery, nie ma <code>npm run build</code></td></tr>
+  <tr><td>Kolejki i zadania (<code>database/jobs</code>)</td><td>Brak zadań w tle w tym projekcie</td></tr>
+  <tr><td>Wysyłanie emaili</td><td>Brak <code>email_verified_at</code> — rejestracja nie wymaga weryfikacji emaila</td></tr>
+  <tr><td>Tokeny API (Bearer tokens)</td><td>Używamy cookie-based Sanctum SPA — bardziej odpowiedni dla frontendu przeglądarkowego</td></tr>
+  <tr><td>System ról / uprawnień</td><td>Jeden typ użytkownika — brak admina, brak potrzeby ról</td></tr>
+</table>
+
+<br><br>
+<hr style="border:none;border-top:1px solid #e0e0e0;margin:24px 0">
+<p style="font-size:12px;color:#999;text-align:center">ARTIKULA — Laravel 13 / MySQL 9 / Sanctum SPA / PHPUnit &nbsp;|&nbsp; 2026</p>
+</body>
+</html>

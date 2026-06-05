@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ARTIKULA — Tests Explained</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 14px; color: #1a1a1a; line-height: 1.7; background: #fff; padding: 48px; max-width: 900px; margin: 0 auto; }
+  h1 { font-size: 28px; font-weight: 700; margin-bottom: 4px; letter-spacing: -0.5px; }
+  .subtitle { font-size: 14px; color: #666; margin-bottom: 40px; }
+  h2 { font-size: 16px; font-weight: 700; margin: 40px 0 14px; padding-bottom: 6px; border-bottom: 2px solid #e8e8e8; text-transform: uppercase; letter-spacing: 0.05em; color: #111; }
+  h3 { font-size: 14px; font-weight: 700; margin: 24px 0 8px; color: #222; }
+  h4 { font-size: 13px; font-weight: 700; margin: 16px 0 6px; color: #444; }
+  p { margin-bottom: 10px; color: #444; }
+  pre { background: #f4f4f4; border: 1px solid #e0e0e0; border-radius: 6px; padding: 14px 16px; margin: 8px 0 12px; overflow-x: auto; }
+  code { font-family: 'SF Mono', 'Fira Code', Consolas, monospace; font-size: 12.5px; color: #1a1a1a; }
+  pre code { color: #1a1a1a; }
+  .inline { background: #f0f0f0; padding: 1px 6px; border-radius: 3px; font-family: monospace; font-size: 12.5px; }
+  .def { background: #f8f8ff; border: 1px solid #d0d0f0; border-radius: 8px; padding: 16px 20px; margin: 12px 0; }
+  .def strong { display: block; font-size: 15px; margin-bottom: 6px; color: #1a1a1a; }
+  .note { background: #fffbeb; border-left: 3px solid #f59e0b; padding: 10px 14px; margin: 10px 0; border-radius: 0 6px 6px 0; font-size: 13px; color: #555; }
+  .owasp { background: #f0fdf4; border-left: 3px solid #22c55e; padding: 8px 14px; margin: 8px 0; border-radius: 0 6px 6px 0; font-size: 13px; color: #444; }
+  .test-block { border: 1px solid #e8e8e8; border-radius: 10px; padding: 20px 24px; margin: 16px 0; }
+  .test-name { font-family: monospace; font-size: 13px; font-weight: 700; color: #1a1a1a; background: #f4f4f4; padding: 4px 10px; border-radius: 4px; display: inline-block; margin-bottom: 10px; }
+  .test-pass { color: #16a34a; font-weight: 700; font-size: 12px; float: right; margin-top: 2px; }
+  .explain-line { display: flex; gap: 12px; margin: 4px 0; font-size: 13px; }
+  .explain-line .arrow { color: #999; flex-shrink: 0; padding-top: 1px; }
+  .explain-line .text { color: #444; }
+  .flow-step { display: flex; gap: 14px; align-items: flex-start; margin: 10px 0; }
+  .flow-num { flex-shrink: 0; width: 24px; height: 24px; background: #1a1a1a; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; margin-top: 1px; }
+  .flow-body { flex: 1; font-size: 13px; color: #444; padding-top: 2px; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0 16px; font-size: 13px; }
+  th { background: #f4f4f4; padding: 8px 12px; text-align: left; font-weight: 700; border: 1px solid #e0e0e0; }
+  td { padding: 8px 12px; border: 1px solid #e0e0e0; color: #444; vertical-align: top; }
+  @media print {
+    body { padding: 20px; font-size: 12px; }
+    .test-block { break-inside: avoid; }
+    h2 { break-before: auto; }
+  }
+</style>
+</head>
+<body>
+
+<h1>ARTIKULA — Tests Explained</h1>
+<p class="subtitle">Manual terminal tests + automated PHPUnit tests — what they do and why</p>
+
+<nav style="background:#f8f8ff;border:1px solid #d0d0f0;border-radius:10px;padding:20px 24px;margin-bottom:36px">
+  <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#888;margin-bottom:12px">Table of contents</div>
+  <ol style="padding-left:20px;color:#333;font-size:13.5px;line-height:2">
+    <li><a href="#c1" style="color:#7c3aed;text-decoration:none;font-weight:500">Key concepts</a> — cookie, session, CSRF, XSRF-TOKEN, Sanctum SPA</li>
+    <li><a href="#c2" style="color:#7c3aed;text-decoration:none;font-weight:500">Manual terminal tests</a> — XSRF flow, curl step by step, errors and fixes</li>
+    <li><a href="#c3" style="color:#7c3aed;text-decoration:none;font-weight:500">Automated PHPUnit tests</a>
+      <ul style="padding-left:18px;list-style:disc;line-height:2">
+        <li><a href="#auth-tests" style="color:#555;text-decoration:none">AuthTest.php</a> — register, login, strong password, unique email, wrong password, no session</li>
+        <li><a href="#apt-tests" style="color:#555;text-decoration:none">AppointmentTest.php</a> — CRUD, IDOR, past date, double booking, invalid time, limit</li>
+      </ul>
+    </li>
+    <li><a href="#c4" style="color:#7c3aed;text-decoration:none;font-weight:500">OWASP Top 10 2025 coverage</a> — how we prevent each threat + code from the project</li>
+  </ol>
+</nav>
+
+<!-- ============================================================ -->
+<h2 id="c1">Part 1 — Key concepts</h2>
+
+<div class="def">
+  <strong>Cookie</strong>
+  A small piece of data the server sends to the browser, stored automatically. On every subsequent request the browser attaches the cookie back to the server — without the user doing anything. Used for sessions (knowing who is logged in) and CSRF tokens.
+  <br><br>
+  Example — server response header:<br>
+  <code>Set-Cookie: XSRF-TOKEN=abc123; Path=/; SameSite=Lax</code><br>
+  <code>Set-Cookie: laravel_session=xyz789; HttpOnly; Path=/</code>
+</div>
+
+<div class="def">
+  <strong>Session</strong>
+  Laravel creates a unique session for each visitor and stores a session ID in a cookie (<code>laravel_session</code>). The actual session data (who is logged in) lives on the server. The cookie is just an ID — like a locker key, the locker with your data is on the server side.
+</div>
+
+<div class="def">
+  <strong>CSRF — Cross-Site Request Forgery</strong>
+  An attack where a malicious website tricks your browser into sending a request to a different website while you are logged in there. Example: you are logged into your bank, you visit an evil site — it silently sends a POST to your bank's "transfer money" endpoint using your session cookies.
+  <br><br>
+  <strong>How Laravel prevents it:</strong> The server generates a secret token (<code>XSRF-TOKEN</code>) and puts it in a cookie. Any POST/PUT/DELETE request must also send this token in a header (<code>X-XSRF-TOKEN</code>). An evil website can read your cookies via JavaScript only if it's on the same domain — so it cannot steal the token. Laravel rejects any state-changing request that does not include the correct token.
+</div>
+
+<div class="def">
+  <strong>XSRF-TOKEN vs laravel_session</strong>
+  <table style="margin-top:10px">
+    <tr><th>Cookie</th><th>What it stores</th><th>Who reads it</th><th>HttpOnly</th></tr>
+    <tr><td><code>XSRF-TOKEN</code></td><td>CSRF protection token</td><td>JavaScript reads it, sends as header</td><td>No — intentionally readable by JS</td></tr>
+    <tr><td><code>laravel_session</code></td><td>Session ID</td><td>Browser sends it automatically</td><td>Yes — JS cannot read it (more secure)</td></tr>
+  </table>
+</div>
+
+<div class="def">
+  <strong>Sanctum SPA (Stateful API)</strong>
+  Laravel Sanctum in SPA mode uses cookies instead of API tokens. The frontend (browser) logs in once, gets a session cookie, and every subsequent API request is authenticated automatically because the browser sends the cookie. No need to store a token in localStorage. This is the approach used in ARTIKULA.
+</div>
+
+<!-- ============================================================ -->
+<h2 id="c2">Part 2 — Manual terminal tests (curl)</h2>
+
+<p>These are the tests we ran manually in the terminal to verify the API works before writing automated tests. Every curl command is an HTTP request sent from the terminal.</p>
+
+<h3>The XSRF flow — step by step</h3>
+
+<p>Every state-changing request (POST, PUT, DELETE) requires this 2-step flow:</p>
+
+<div class="flow-step">
+  <div class="flow-num">1</div>
+  <div class="flow-body"><strong>GET /sanctum/csrf-cookie</strong> — ask Laravel to set the XSRF-TOKEN cookie</div>
+</div>
+<div class="flow-step">
+  <div class="flow-num">2</div>
+  <div class="flow-body"><strong>Read the cookie</strong> — extract the token value from the saved cookie file</div>
+</div>
+<div class="flow-step">
+  <div class="flow-num">3</div>
+  <div class="flow-body"><strong>POST /api/login</strong> (or register, etc.) — send the token as <code>X-XSRF-TOKEN</code> header</div>
+</div>
+
+<h3>Step 1 — Get the CSRF cookie</h3>
+<pre><code>curl -s -c cookies.txt \
+  -H "Origin: http://127.0.0.1:8000" \
+  http://127.0.0.1:8000/sanctum/csrf-cookie</code></pre>
+
+<div class="explain-line"><span class="arrow">→</span><span class="text"><code>-s</code> — silent mode, hides download progress stats</span></div>
+<div class="explain-line"><span class="arrow">→</span><span class="text"><code>-c cookies.txt</code> — save any cookies the server sends into a file called cookies.txt</span></div>
+<div class="explain-line"><span class="arrow">→</span><span class="text"><code>-H "Origin: ..."</code> — tells Sanctum this request is from a known stateful domain. Without this, Sanctum does not start a session and the next request fails with "Session store not set on request"</span></div>
+<div class="explain-line"><span class="arrow">→</span><span class="text">After this, <code>cookies.txt</code> contains both <code>XSRF-TOKEN</code> and <code>laravel_session</code> cookies</span></div>
+
+<h3>Step 2 — Extract the token (URL-decode it)</h3>
+<pre><code>XSRF=$(grep XSRF-TOKEN cookies.txt | awk '{print $7}' | sed 's/%3D/=/g; s/%2B/+/g; s/%2F/\//g')</code></pre>
+
+<div class="explain-line"><span class="arrow">→</span><span class="text"><code>grep XSRF-TOKEN cookies.txt</code> — find the line with the token in the file</span></div>
+<div class="explain-line"><span class="arrow">→</span><span class="text"><code>awk '{print $7}'</code> — grab the 7th column (the token value)</span></div>
+<div class="explain-line"><span class="arrow">→</span><span class="text"><code>sed 's/%3D/=/g'</code> — URL-decode: the cookie is URL-encoded, <code>%3D</code> means <code>=</code>, <code>%2B</code> means <code>+</code>, <code>%2F</code> means <code>/</code>. Laravel validates the raw token, not the URL-encoded version.</span></div>
+<div class="explain-line"><span class="arrow">→</span><span class="text">The result is stored in a shell variable <code>$XSRF</code></span></div>
+
+<div class="note">In a real browser this decoding is done automatically by JavaScript. In curl we have to do it manually — that's why the curl flow is more complex than what happens in the browser.</div>
+
+<h3>Step 3 — Register a user</h3>
+<pre><code>curl -s -b cookies.txt -c cookies.txt \
+  -X POST http://127.0.0.1:8000/api/register \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
+  -H "Origin: http://127.0.0.1:8000" \
+  -H "X-XSRF-TOKEN: $XSRF" \
+  -d '{"email":"krystian@test.com","password":"Artikula!2026"}' | json_pp</code></pre>
+
+<div class="explain-line"><span class="arrow">→</span><span class="text"><code>-b cookies.txt</code> — send the cookies we saved earlier (session + XSRF)</span></div>
+<div class="explain-line"><span class="arrow">→</span><span class="text"><code>-c cookies.txt</code> — also save any new cookies the server sends back (session regenerates after login)</span></div>
+<div class="explain-line"><span class="arrow">→</span><span class="text"><code>-X POST</code> — this is a POST request</span></div>
+<div class="explain-line"><span class="arrow">→</span><span class="text"><code>-H "Content-Type: application/json"</code> — tells the server the body is JSON</span></div>
+<div class="explain-line"><span class="arrow">→</span><span class="text"><code>-H "Accept: application/json"</code> — tells Laravel to return JSON errors instead of HTML redirects</span></div>
+<div class="explain-line"><span class="arrow">→</span><span class="text"><code>-H "X-XSRF-TOKEN: $XSRF"</code> — the CSRF token we extracted. Laravel checks this matches the session.</span></div>
+<div class="explain-line"><span class="arrow">→</span><span class="text"><code>-d '{...}'</code> — the request body (email + password)</span></div>
+<div class="explain-line"><span class="arrow">→</span><span class="text"><code>| json_pp</code> — pipe the response through json_pp to pretty-print it</span></div>
+
+<h3>Why we must refresh the XSRF token before each request</h3>
+<p>After register/login, Laravel calls <code>session()->regenerate()</code> — it creates a new session ID and a new CSRF token. The old <code>$XSRF</code> variable is no longer valid. We must re-extract it from <code>cookies.txt</code> before the next POST.</p>
+
+<h3>Errors we hit during manual testing</h3>
+
+<table>
+  <tr><th>Error message</th><th>Cause</th><th>Fix</th></tr>
+  <tr><td><code>Session store not set on request</code></td><td>Missing <code>Origin</code> header — Sanctum did not initialise a session</td><td>Add <code>-H "Origin: http://127.0.0.1:8000"</code> to every curl request</td></tr>
+  <tr><td><code>CSRF token mismatch</code></td><td>Sent an old/expired XSRF token, or forgot to refresh after login</td><td>Re-run the XSRF extraction step before each POST</td></tr>
+  <tr><td><code>Route [login] not defined</code></td><td>Unauthenticated API request tried to redirect to a named route that does not exist</td><td>Added <code>redirectGuestsTo(null)</code> + 401 JSON handler in <code>bootstrap/app.php</code></td></tr>
+  <tr><td><code>Call to undefined method authorize()</code></td><td>Laravel 13 removed <code>AuthorizesRequests</code> from base Controller</td><td>Added <code>use AuthorizesRequests;</code> manually to <code>app/Http/Controllers/Controller.php</code></td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="c3">Part 3 — Automated PHPUnit tests</h2>
+
+<p>Run with: <code class="inline">php artisan test</code></p>
+<p>All tests use <code class="inline">RefreshDatabase</code> — the database is wiped and rebuilt between every single test. Tests never affect each other.</p>
+<p>Tests run on SQLite in-memory — fast and isolated from your real MySQL database.</p>
+
+<!-- ---- AUTH TESTS ---- -->
+<h3 id="auth-tests">File: tests/Feature/AuthTest.php</h3>
+
+<div class="test-block">
+  <span class="test-name">test_user_can_register</span>
+  <span class="test-pass">PASS</span>
+  <pre><code>$response = $this->withHeader('Origin', 'http://localhost')
+    ->postJson('/api/register', [
+        'email'    => 'test@test.com',
+        'password' => 'Artikula!2026',
+    ]);
+
+$response->assertStatus(201)
+         ->assertJsonPath('user.email', 'test@test.com')
+         ->assertJsonMissingPath('user.password');</code></pre>
+  <h4>What each line does:</h4>
+  <div class="explain-line"><span class="arrow">→</span><span class="text"><code>withHeader('Origin', ...)</code> — same as adding <code>-H "Origin"</code> in curl. Required for Sanctum to init a session in tests.</span></div>
+  <div class="explain-line"><span class="arrow">→</span><span class="text"><code>postJson('/api/register', [...])</code> — sends a POST request with JSON body. Laravel's test client handles CSRF automatically.</span></div>
+  <div class="explain-line"><span class="arrow">→</span><span class="text"><code>assertStatus(201)</code> — checks the HTTP status code is 201 Created</span></div>
+  <div class="explain-line"><span class="arrow">→</span><span class="text"><code>assertJsonPath('user.email', 'test@test.com')</code> — checks the JSON response contains <code>{"user": {"email": "test@test.com"}}</code></span></div>
+  <div class="explain-line"><span class="arrow">→</span><span class="text"><code>assertJsonMissingPath('user.password')</code> — confirms the password hash is NOT returned in the response (security)</span></div>
+</div>
+
+<div class="test-block">
+  <span class="test-name">test_register_requires_strong_password</span>
+  <span class="test-pass">PASS</span>
+  <pre><code>$response = $this->withHeader('Origin', 'http://localhost')
+    ->postJson('/api/register', [
+        'email'    => 'test@test.com',
+        'password' => '123',
+    ]);
+
+$response->assertStatus(422)
+         ->assertJsonValidationErrors(['password']);</code></pre>
+  <div class="explain-line"><span class="arrow">→</span><span class="text"><code>assertStatus(422)</code> — Unprocessable Entity, meaning validation failed</span></div>
+  <div class="explain-line"><span class="arrow">→</span><span class="text"><code>assertJsonValidationErrors(['password'])</code> — confirms the error is about the password field specifically</span></div>
+  <div class="owasp">OWASP A07 — Identification and Authentication Failures: weak passwords rejected by <code>Password::min(8)->uncompromised()</code></div>
+</div>
+
+<div class="test-block">
+  <span class="test-name">test_register_requires_unique_email</span>
+  <span class="test-pass">PASS</span>
+  <pre><code>User::factory()->create(['email' => 'test@test.com']);
+
+$response = $this->withHeader('Origin', 'http://localhost')
+    ->postJson('/api/register', [
+        'email'    => 'test@test.com',
+        'password' => 'Artikula!2026',
+    ]);
+
+$response->assertStatus(422)
+         ->assertJsonValidationErrors(['email']);</code></pre>
+  <div class="explain-line"><span class="arrow">→</span><span class="text"><code>User::factory()->create([...])</code> — creates a user directly in the test database (bypasses the API). <code>factory()</code> uses <code>database/factories/UserFactory.php</code> to generate realistic fake data.</span></div>
+  <div class="explain-line"><span class="arrow">→</span><span class="text">Then we try to register with the same email — it should fail with a validation error on the email field</span></div>
+</div>
+
+<div class="test-block">
+  <span class="test-name">test_user_can_login</span>
+  <span class="test-pass">PASS</span>
+  <pre><code>User::factory()->create([
+    'email'    => 'test@test.com',
+    'password' => bcrypt('Artikula!2026'),
+]);
+
+$response = $this->withHeader('Origin', 'http://localhost')
+    ->postJson('/api/login', [
+        'email'    => 'test@test.com',
+        'password' => 'Artikula!2026',
+    ]);
+
+$response->assertStatus(200)
+         ->assertJsonPath('user.email', 'test@test.com');</code></pre>
+  <div class="explain-line"><span class="arrow">→</span><span class="text"><code>bcrypt('Artikula!2026')</code> — stores a hashed password. We cannot store plain text — Laravel's <code>Auth::attempt()</code> compares using bcrypt internally.</span></div>
+</div>
+
+<div class="test-block">
+  <span class="test-name">test_login_fails_with_wrong_password</span>
+  <span class="test-pass">PASS</span>
+  <pre><code>$response->assertStatus(401)
+         ->assertJsonPath('message', 'Nieprawidlowe dane logowania.');</code></pre>
+  <div class="explain-line"><span class="arrow">→</span><span class="text">Checks the error message is generic — it does NOT say "user not found" or "wrong password". Both cases return the same message.</span></div>
+  <div class="owasp">OWASP A07 — generic error prevents attacker from knowing whether the email exists in the database</div>
+</div>
+
+<div class="test-block">
+  <span class="test-name">test_unauthenticated_cannot_access_appointments</span>
+  <span class="test-pass">PASS</span>
+  <pre><code>$response = $this->getJson('/api/appointments');
+$response->assertStatus(401);</code></pre>
+  <div class="explain-line"><span class="arrow">→</span><span class="text">No <code>actingAs()</code> — the request has no session. Laravel should return 401, not redirect to a login page.</span></div>
+  <div class="owasp">OWASP A10 — Server-Side Request Forgery / broken auth: API always returns JSON 401, never HTML redirects</div>
+</div>
+
+<!-- ---- APPOINTMENT TESTS ---- -->
+<h3 id="apt-tests">File: tests/Feature/AppointmentTest.php</h3>
+
+<p>All appointment tests share a <code class="inline">setUp()</code> method that runs before each test:</p>
+<pre><code>protected function setUp(): void
+{
+    parent::setUp();
+    $this->user    = User::factory()->create();
+    $this->service = Service::create(['name' => 'Terapia jakania']);
+}</code></pre>
+<div class="explain-line"><span class="arrow">→</span><span class="text"><code>parent::setUp()</code> — runs Laravel's own setup (including <code>RefreshDatabase</code> to wipe the DB)</span></div>
+<div class="explain-line"><span class="arrow">→</span><span class="text">Creates one test user and one service that all tests in this file can use via <code>$this->user</code> and <code>$this->service</code></span></div>
+
+<div class="test-block">
+  <span class="test-name">test_user_can_create_appointment</span>
+  <span class="test-pass">PASS</span>
+  <pre><code>$response = $this->actingAs($this->user)->postJson('/api/appointments', [
+    'service_id'   => $this->service->id,
+    'patient_name' => 'Jan Kowalski',
+    'date'         => '2026-08-01',
+    'time'         => '09:00',
+    'mode'         => 'stacjonarnie',
+]);
+
+$response->assertStatus(201)
+         ->assertJsonPath('patient_name', 'Jan Kowalski')
+         ->assertJsonPath('user_id', $this->user->id);</code></pre>
+  <div class="explain-line"><span class="arrow">→</span><span class="text"><code>actingAs($this->user)</code> — tells Laravel "treat this request as coming from this user". Bypasses the login flow. The session and cookies are set up automatically.</span></div>
+  <div class="explain-line"><span class="arrow">→</span><span class="text"><code>assertJsonPath('user_id', $this->user->id)</code> — confirms the server attached the correct user_id, even though we did not send it in the request body (the controller sets it from the session)</span></div>
+</div>
+
+<div class="test-block">
+  <span class="test-name">test_user_sees_only_own_appointments</span>
+  <span class="test-pass">PASS</span>
+  <pre><code>$otherUser = User::factory()->create();
+
+Appointment::create(['user_id' => $this->user->id,    'patient_name' => 'Moj pacjent',  ...]);
+Appointment::create(['user_id' => $otherUser->id,     'patient_name' => 'Cudzy pacjent', ...]);
+
+$response = $this->actingAs($this->user)->getJson('/api/appointments');
+
+$response->assertStatus(200)
+         ->assertJsonCount(1)
+         ->assertJsonPath('0.patient_name', 'Moj pacjent');</code></pre>
+  <div class="explain-line"><span class="arrow">→</span><span class="text">We create 2 appointments — one for our user, one for a different user</span></div>
+  <div class="explain-line"><span class="arrow">→</span><span class="text"><code>assertJsonCount(1)</code> — the response array must have exactly 1 item (not 2)</span></div>
+  <div class="explain-line"><span class="arrow">→</span><span class="text"><code>assertJsonPath('0.patient_name', 'Moj pacjent')</code> — the first (index 0) item must be OUR appointment, not the other user's</span></div>
+</div>
+
+<div class="test-block">
+  <span class="test-name">test_cannot_update_others_appointment</span>
+  <span class="test-pass">PASS</span>
+  <pre><code>$otherUser   = User::factory()->create();
+$appointment = Appointment::create(['user_id' => $otherUser->id, 'patient_name' => 'Cudzy pacjent', ...]);
+
+$response = $this->actingAs($this->user)
+    ->putJson("/api/appointments/{$appointment->id}", [
+        'patient_name' => 'HAKER BYL TU',
+    ]);
+
+$response->assertStatus(403);
+$this->assertDatabaseHas('appointments', ['patient_name' => 'Cudzy pacjent']);</code></pre>
+  <div class="explain-line"><span class="arrow">→</span><span class="text">We log in as <code>$this->user</code> but try to edit an appointment that belongs to <code>$otherUser</code></span></div>
+  <div class="explain-line"><span class="arrow">→</span><span class="text"><code>assertStatus(403)</code> — Forbidden. <code>AppointmentPolicy</code> checks <code>$user->id === $appointment->user_id</code> and returns false.</span></div>
+  <div class="explain-line"><span class="arrow">→</span><span class="text"><code>assertDatabaseHas('appointments', ['patient_name' => 'Cudzy pacjent'])</code> — the original name is still in the database, unchanged</span></div>
+  <div class="owasp">OWASP A01 — Broken Access Control / IDOR (Insecure Direct Object Reference): changing the ID in the URL to access another user's resource is blocked</div>
+</div>
+
+<div class="test-block">
+  <span class="test-name">test_cannot_book_past_date</span>
+  <span class="test-pass">PASS</span>
+  <pre><code>$response = $this->actingAs($this->user)->postJson('/api/appointments', [
+    ...
+    'date' => '2020-01-01',
+    ...
+]);
+
+$response->assertStatus(422)
+         ->assertJsonValidationErrors(['date']);</code></pre>
+  <div class="explain-line"><span class="arrow">→</span><span class="text">The rule <code>after_or_equal:today</code> in <code>StoreAppointmentRequest</code> rejects any date before today</span></div>
+  <div class="owasp">OWASP A06 — Security Misconfiguration: input validation prevents nonsensical/malicious data entering the database</div>
+</div>
+
+<div class="test-block">
+  <span class="test-name">test_cannot_double_book_same_slot</span>
+  <span class="test-pass">PASS</span>
+  <pre><code>Appointment::create([..., 'date' => '2026-08-01', 'time' => '09:00', ...]);
+
+$response = $this->actingAs($this->user)->postJson('/api/appointments', [
+    ..., 'date' => '2026-08-01', 'time' => '09:00', ...
+]);
+
+$response->assertStatus(422)
+         ->assertJsonValidationErrors(['time']);</code></pre>
+  <div class="explain-line"><span class="arrow">→</span><span class="text">First we create an appointment at 09:00. Then we try to book another appointment at the same date and time — it must be rejected.</span></div>
+  <div class="explain-line"><span class="arrow">→</span><span class="text">The check happens in <code>withValidator()</code> in <code>StoreAppointmentRequest</code>: <code>Appointment::where('date', ...)->where('time', ...)->exists()</code></span></div>
+</div>
+
+<div class="test-block">
+  <span class="test-name">test_cannot_book_invalid_time</span>
+  <span class="test-pass">PASS</span>
+  <pre><code>$response = $this->actingAs($this->user)->postJson('/api/appointments', [
+    ..., 'time' => '23:00', ...
+]);
+
+$response->assertStatus(422)
+         ->assertJsonValidationErrors(['time']);</code></pre>
+  <div class="explain-line"><span class="arrow">→</span><span class="text"><code>Rule::in(['09:00', '10:00', '11:00', '13:00', '15:00', '18:00'])</code> — only these 6 times are accepted. 23:00 is not in the list.</span></div>
+</div>
+
+<div class="test-block">
+  <span class="test-name">test_cannot_exceed_appointment_limit</span>
+  <span class="test-pass">PASS</span>
+  <pre><code>foreach (['09:00', '10:00', '11:00'] as $time) {
+    Appointment::create(['user_id' => $this->user->id, ..., 'time' => $time, ...]);
+}
+
+$response = $this->actingAs($this->user)->postJson('/api/appointments', [
+    ..., 'date' => '2026-08-02', 'time' => '09:00', ...
+]);
+
+$response->assertStatus(422)
+         ->assertJsonValidationErrors(['limit']);</code></pre>
+  <div class="explain-line"><span class="arrow">→</span><span class="text"><code>foreach</code> — creates exactly 3 appointments (the maximum allowed)</span></div>
+  <div class="explain-line"><span class="arrow">→</span><span class="text">The 4th attempt — on a completely different date — must be rejected with a <code>limit</code> error</span></div>
+  <div class="explain-line"><span class="arrow">→</span><span class="text">Backend check: <code>Appointment::where('user_id', auth()->id())->count() >= 3</code></span></div>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="c4">Part 4 — OWASP Top 10 2025 Coverage</h2>
+
+<p>All 10 items. Legend: <strong style="color:#16a34a">✓ done</strong> — <strong style="color:#d97706">~ partial</strong> (remaining items are production config, not application code) — <strong style="color:#6b7280">— not applicable</strong> to this project. PHPUnit where a test is possible, curl where CSRF.</p>
+
+<table style="font-size:13px">
+  <tr><th style="width:60px">ID</th><th style="width:200px">Threat</th><th>What we do</th><th style="width:180px">File : lines</th><th style="width:80px">Test</th></tr>
+  <tr>
+    <td><strong style="color:#ef4444">A01</strong></td>
+    <td>Broken Access Control</td>
+    <td><code>AppointmentPolicy</code> checks <code>user_id === auth()->id()</code> on every edit and delete. List endpoint filters by <code>where('user_id', auth()->id())</code> — users only see their own records.</td>
+    <td><code>Policies/AppointmentPolicy.php</code> : 9–17<br><code>Controllers/AppointmentController.php</code> : 35, 44</td>
+    <td style="color:#16a34a;text-align:center">✓ PHPUnit</td>
+  </tr>
+  <tr>
+    <td><strong style="color:#d97706">A02</strong></td>
+    <td>Security Misconfiguration</td>
+    <td><code>.env</code> excluded from repo (<code>.gitignore</code>). In production: <code>APP_DEBUG=false</code>, <code>SESSION_SECURE_COOKIE=true</code>, HTTP headers (X-Frame-Options, CSP) must be added. Dev config is appropriate for local use.</td>
+    <td><code>.gitignore</code> : line 3<br>(production: <code>.env</code> values)</td>
+    <td style="color:#6b7280;text-align:center">— config</td>
+  </tr>
+  <tr>
+    <td><strong style="color:#16a34a">A03</strong></td>
+    <td>Software Supply Chain</td>
+    <td><code>composer.lock</code> committed to repo — deterministic package versions, every clone gets identical dependencies. Run <code>composer audit</code> to check for known CVEs in dependencies.</td>
+    <td><code>composer.lock</code> (whole file)</td>
+    <td style="color:#6b7280;text-align:center">— structural</td>
+  </tr>
+  <tr>
+    <td><strong style="color:#16a34a">A04</strong></td>
+    <td>Cryptographic Failures</td>
+    <td>Passwords hashed with bcrypt (<code>BCRYPT_ROUNDS=12</code>). The <code>'password' =&gt; 'hashed'</code> cast on the model means plain text never reaches the database. <code>APP_KEY</code> encrypts sessions and cookies.</td>
+    <td><code>Models/User.php</code> : 23<br><code>phpunit.xml</code> : line 23</td>
+    <td style="color:#6b7280;text-align:center">— structural</td>
+  </tr>
+  <tr>
+    <td><strong style="color:#16a34a">A05</strong></td>
+    <td>Injection</td>
+    <td>Eloquent ORM everywhere — zero raw SQL. Every query is a PDO prepared statement. Form Requests validate every field before business logic runs. <code>Rule::in([...])</code> for <code>time</code> and <code>mode</code> — only whitelisted values accepted.</td>
+    <td><code>Requests/StoreAppointmentRequest.php</code> : 17–23<br><code>Controllers/AppointmentController.php</code> : 14–18</td>
+    <td style="color:#6b7280;text-align:center">— structural</td>
+  </tr>
+  <tr>
+    <td><strong style="color:#16a34a">A06</strong></td>
+    <td>Insecure Design</td>
+    <td>Slot conflict check server-side. Past dates rejected (<code>after_or_equal:today</code>). Max 3 appointments per user. Principle of least disclosure: API returns only needed fields. Design choice: user account ≠ patient record.</td>
+    <td><code>Requests/StoreAppointmentRequest.php</code> : 20, 37–41</td>
+    <td style="color:#16a34a;text-align:center">✓ PHPUnit</td>
+  </tr>
+  <tr>
+    <td><strong style="color:#16a34a">A07</strong></td>
+    <td>Authentication Failures</td>
+    <td>Sanctum SPA + session regeneration after login. Rate limiting <code>throttle:6,1</code>. Strong password <code>Password::min(8)->uncompromised()</code> (checks HaveIBeenPwned). Generic error message on failed login. Logout invalidates session.</td>
+    <td><code>Requests/RegisterRequest.php</code> : 19<br><code>Controllers/AuthController.php</code> : 19, 29, 39<br><code>routes/api.php</code> : 10</td>
+    <td style="color:#16a34a;text-align:center">✓ PHPUnit</td>
+  </tr>
+  <tr>
+    <td><strong style="color:#16a34a">A08</strong></td>
+    <td>Data Integrity / CSRF</td>
+    <td>Sanctum stateful — every POST/PUT/DELETE requires <code>X-XSRF-TOKEN</code> header. Frontend fetches the token via <code>/sanctum/csrf-cookie</code> before each mutation. No deserialization of untrusted data anywhere.</td>
+    <td><code>bootstrap/app.php</code> : 17<br><code>public/app.js</code> : 14–22</td>
+    <td style="color:#d97706;text-align:center">~ curl</td>
+  </tr>
+  <tr>
+    <td><strong style="color:#16a34a">A09</strong></td>
+    <td>Security Logging</td>
+    <td>Failed login attempts written to <code>storage/logs/laravel.log</code> with email and IP (<code>Log::warning</code>). Passwords and tokens are never logged.</td>
+    <td><code>Controllers/AuthController.php</code> : 28</td>
+    <td style="color:#6b7280;text-align:center">— log</td>
+  </tr>
+  <tr>
+    <td><strong style="color:#16a34a">A10</strong></td>
+    <td>Exceptional Conditions</td>
+    <td>Unauthenticated API requests → 401 JSON (not HTML redirect). <code>AuthenticationException</code> handled globally. <code>shouldRenderJsonWhen</code> for all <code>api/*</code> — errors always as JSON, never as HTML that would crash the frontend.</td>
+    <td><code>bootstrap/app.php</code> : 18, 21–28</td>
+    <td style="color:#16a34a;text-align:center">✓ PHPUnit</td>
+  </tr>
+</table>
+
+<br><br>
+<hr style="border:none;border-top:1px solid #e0e0e0;margin:24px 0">
+<p style="font-size:12px;color:#999;text-align:center">ARTIKULA — Tests Explained &nbsp;|&nbsp; 2026</p>
+
+</body>
+</html>

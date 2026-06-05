@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ARTIKULA — Instrukcja uruchomienia</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 14px; color: #1a1a1a; line-height: 1.6; background: #fff; padding: 48px; max-width: 860px; margin: 0 auto; }
+  h1 { font-size: 28px; font-weight: 700; margin-bottom: 4px; letter-spacing: -0.5px; }
+  .subtitle { font-size: 14px; color: #666; margin-bottom: 40px; }
+  h2 { font-size: 16px; font-weight: 700; margin: 36px 0 12px; padding-bottom: 6px; border-bottom: 2px solid #e8e8e8; text-transform: uppercase; letter-spacing: 0.05em; color: #111; }
+  h3 { font-size: 13px; font-weight: 700; margin: 20px 0 8px; color: #333; }
+  p { margin-bottom: 10px; color: #444; }
+  .step { display: flex; gap: 16px; margin-bottom: 20px; }
+  .step-num { flex-shrink: 0; width: 28px; height: 28px; background: #1a1a1a; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; margin-top: 2px; }
+  .step-body { flex: 1; }
+  .step-body strong { display: block; margin-bottom: 4px; font-size: 14px; }
+  .file-tag { display: inline-flex; align-items: center; gap: 6px; background: #1a1a1a; color: #fff; font-family: monospace; font-size: 11px; padding: 3px 10px; border-radius: 4px; margin-bottom: 4px; }
+  .file-tag .lines { background: #c084fc; color: #1a1a1a; padding: 1px 6px; border-radius: 3px; font-weight: 700; margin-left: 4px; }
+  pre { background: #f4f4f4; border: 1px solid #e0e0e0; border-radius: 0 6px 6px 6px; padding: 12px 16px; margin: 0 0 10px; overflow-x: auto; }
+  code { font-family: 'SF Mono', 'Fira Code', Consolas, monospace; font-size: 12.5px; color: #1a1a1a; }
+  .inline { background: #f0f0f0; padding: 1px 6px; border-radius: 3px; font-family: monospace; font-size: 12.5px; }
+  .note { background: #fffbeb; border-left: 3px solid #f59e0b; padding: 10px 14px; margin: 10px 0; border-radius: 0 6px 6px 0; font-size: 13px; color: #555; }
+  .warn { background: #fff1f0; border-left: 3px solid #ef4444; padding: 10px 14px; margin: 10px 0; border-radius: 0 6px 6px 0; font-size: 13px; color: #555; }
+  .ok { background: #f0fdf4; border-left: 3px solid #22c55e; padding: 10px 14px; margin: 10px 0; border-radius: 0 6px 6px 0; font-size: 13px; color: #555; }
+  .url { font-size: 18px; font-weight: 700; background: #f4f4f4; padding: 10px 16px; border-radius: 6px; display: inline-block; margin: 8px 0; font-family: monospace; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 13px; }
+  th { background: #f4f4f4; padding: 8px 12px; text-align: left; font-weight: 700; border: 1px solid #e0e0e0; }
+  td { padding: 8px 12px; border: 1px solid #e0e0e0; color: #444; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 700; }
+  .badge-green { background: #dcfce7; color: #166534; }
+  .badge-red { background: #fee2e2; color: #991b1b; }
+  @media print { body { padding: 20px; font-size: 12px; } pre { break-inside: avoid; } .step { break-inside: avoid; } }
+</style>
+</head>
+<body>
+
+<h1>ARTIKULA — Instrukcja uruchomienia</h1>
+<p class="subtitle">Laravel 13 + MySQL + Sanctum SPA &nbsp;|&nbsp; System rezerwacji wizyt logopedycznych</p>
+
+<h2>Wymagania</h2>
+<table>
+  <tr><th>Narzędzie</th><th>Wersja</th><th>Jak sprawdzić</th></tr>
+  <tr><td>PHP</td><td>8.2+</td><td><code>php -v</code></td></tr>
+  <tr><td>Composer</td><td>2.x</td><td><code>composer --version</code></td></tr>
+  <tr><td>MySQL</td><td>8.0+</td><td><code>mysql --version</code></td></tr>
+  <tr><td>Git</td><td>dowolna</td><td><code>git --version</code></td></tr>
+</table>
+<div class="note">Na Macu z Laravel Herd: używaj <code class="inline">php85</code> zamiast <code class="inline">php</code> oraz <code class="inline">php85 artisan</code> zamiast <code class="inline">php artisan</code>. MySQL musisz zainstalować osobno przez Homebrew — Herd go NIE zawiera.</div>
+
+<h2>Krok 1 — Sklonuj repozytorium</h2>
+<div class="step">
+  <div class="step-num">1</div>
+  <div class="step-body">
+    <strong>Sklonuj i wejdź do projektu</strong>
+    <pre><code>git clone https://github.com/KrystianZawislak/p-laravel.git
+cd p-laravel/app</code></pre>
+    <p>Wszystkie komendy <code class="inline">php artisan</code> i <code class="inline">composer</code> wpisujesz z folderu <code class="inline">p-laravel/app</code>.</p>
+  </div>
+</div>
+
+<h2>Krok 2 — Zainstaluj paczki PHP</h2>
+<div class="step">
+  <div class="step-num">2</div>
+  <div class="step-body">
+    <strong>Pobierz paczki z composer.lock</strong>
+    <pre><code>composer install</code></pre>
+    <p>Pobiera wszystkie biblioteki PHP do folderu <code class="inline">vendor/</code>. Plik <code class="inline">composer.lock</code> w repo gwarantuje, że każdy dostanie dokładnie te same wersje paczek.</p>
+  </div>
+</div>
+
+<h2>Krok 3 — Plik środowiskowy .env</h2>
+<div class="step">
+  <div class="step-num">3</div>
+  <div class="step-body">
+    <strong>Skopiuj przykładowy .env</strong>
+    <pre><code>cp .env.example .env</code></pre>
+  </div>
+</div>
+<div class="step">
+  <div class="step-num">4</div>
+  <div class="step-body">
+    <strong>Wygeneruj klucz aplikacji</strong>
+    <pre><code>php artisan key:generate</code></pre>
+    <p>Wpisuje unikalny sekretny klucz do pliku <code class="inline">.env</code>. Wymagany do szyfrowania sesji i ciasteczek.</p>
+  </div>
+</div>
+<div class="step">
+  <div class="step-num">5</div>
+  <div class="step-body">
+    <strong>Edytuj .env — ustaw połączenie z bazą danych</strong>
+    <p>Otwórz plik <code class="inline">.env</code> w dowolnym edytorze i zmień te linie:</p>
+    <pre><code>DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=artikula
+DB_USERNAME=root
+DB_PASSWORD=
+
+SANCTUM_STATEFUL_DOMAINS=localhost,127.0.0.1,127.0.0.1:8000</code></pre>
+    <div class="note"><code>DB_PASSWORD</code> pozostaje puste jeśli zainstalowałeś MySQL przez Homebrew z domyślnymi ustawieniami (root bez hasła).</div>
+    <div class="note"><code>SANCTUM_STATEFUL_DOMAINS</code> — mówi Sanctum które domeny traktować jako "zaufane" i inicjalizować dla nich sesję. Bez tej linii API zwraca błąd <em>"Session store not set on request"</em>.</div>
+  </div>
+</div>
+
+<h2>Krok 4 — Baza danych</h2>
+<div class="step">
+  <div class="step-num">6</div>
+  <div class="step-body">
+    <strong>Uruchom MySQL (Mac + Homebrew)</strong>
+    <pre><code>brew services start mysql</code></pre>
+  </div>
+</div>
+<div class="step">
+  <div class="step-num">7</div>
+  <div class="step-body">
+    <strong>Utwórz bazę danych</strong>
+    <pre><code>mysql -u root -e "CREATE DATABASE artikula CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"</code></pre>
+  </div>
+</div>
+<div class="step">
+  <div class="step-num">8</div>
+  <div class="step-body">
+    <strong>Uruchom migracje i seed</strong>
+    <pre><code>php artisan migrate --seed</code></pre>
+    <p>Tworzy wszystkie 4 tabele i wstawia 6 usług logopedycznych z seederа. Żadnych użytkowników ani wizyt — tworzy się je przez aplikację.</p>
+    <div class="note"><strong>Co to są migracje?</strong> Pliki PHP w <code class="inline">database/migrations/</code> które opisują strukturę tabel. Zamiast pisać SQL ręcznie, piszesz PHP — Laravel tłumaczy to na SQL i wykonuje. Każda zmiana struktury bazy to osobny plik migracji — dzięki temu historia zmian jest w git.</div>
+    <div class="note"><strong>Co to jest seed?</strong> Plik <code class="inline">database/seeders/DatabaseSeeder.php</code> który wstawia dane startowe — w tym projekcie 6 usług. Uruchamiasz go raz przy setup.</div>
+  </div>
+</div>
+
+<h2>Krok 5 — Uruchom serwer</h2>
+
+<h3>Opcja A — Tylko lokalnie (zalecane do developmentu)</h3>
+<pre><code>php artisan serve</code></pre>
+<p>Otwórz w przeglądarce:</p>
+<div class="url">http://127.0.0.1:8000</div>
+<p>Dostępne tylko z tego komputera. Nic nie jest widoczne w sieci.</p>
+
+<h3>Opcja B — Dostęp z innych urządzeń w tej samej sieci Wi-Fi</h3>
+<pre><code>php artisan serve --host=0.0.0.0 --port=8000</code></pre>
+<p>Znajdź swój lokalny adres IP:</p>
+<pre><code>ipconfig getifaddr en0</code></pre>
+<p>Następnie wejdź z dowolnego urządzenia w tej samej sieci Wi-Fi:</p>
+<div class="url">http://[TWÓJ-IP]:8000</div>
+<p>Przykład: <code class="inline">http://172.20.10.5:8000</code></p>
+
+<h2>Czy połączenie sieciowe jest bezpieczne?</h2>
+<table>
+  <tr><th>Co</th><th>Status</th><th>Wyjaśnienie</th></tr>
+  <tr><td>Ostrzeżenie "Niezabezpieczona" w przeglądarce</td><td><span class="badge badge-red">NORMALNE</span></td><td>Serwer deweloperski używa HTTP, nie HTTPS. Brak certyfikatu SSL. To oczekiwane na localhost.</td></tr>
+  <tr><td>Dane widoczne w sieci lokalnej</td><td><span class="badge badge-red">TAK</span></td><td>Bez HTTPS ruch między telefonem a laptopem jest nieszyfrowany w sieci Wi-Fi.</td></tr>
+  <tr><td>Dostępny z internetu</td><td><span class="badge badge-green">NIE</span></td><td>192.168.x.x i 172.x.x.x to prywatne zakresy IP — nie można się pod nie podłączyć z zewnątrz routera.</td></tr>
+  <tr><td>Bezpieczny do demo i testów</td><td><span class="badge badge-green">TAK</span></td><td>Na zaufanej sieci prywatnej (dom, własny hotspot) — całkowicie w porządku. Nie używaj prawdziwych haseł.</td></tr>
+</table>
+<div class="warn">Nigdy nie uruchamiaj <code class="inline">--host=0.0.0.0</code> na publicznym Wi-Fi (kawiarnia, lotnisko). Twoja aplikacja byłaby widoczna dla wszystkich w tej sieci.</div>
+<div class="ok">Do testów mobilnych na własnym hotspocie lub sieci domowej — całkowicie bezpieczne.</div>
+
+<h2>Uruchom automatyczne testy</h2>
+<pre><code>php artisan test</code></pre>
+<p>Oczekiwany wynik: <strong>15 passed</strong>. Testy używają bazy SQLite w pamięci — nie dotykają Twojego MySQL.</p>
+
+<h2>Branche git</h2>
+<table>
+  <tr><th>Branch</th><th>Do czego</th></tr>
+  <tr><td><code>main</code></td><td>Kod gotowy na produkcję</td></tr>
+  <tr><td><code>develop</code></td><td>Aktywny branch deweloperski</td></tr>
+  <tr><td><code>feature/backend-api</code></td><td>Cała praca backendowa (scalona do develop i main)</td></tr>
+  <tr><td><code>hotfix/appointment-limit</code></td><td>Limit maks. 3 wizyt na użytkownika (scalony)</td></tr>
+</table>
+
+<br><br>
+<hr style="border:none;border-top:1px solid #e0e0e0;margin:24px 0">
+<p style="font-size:12px;color:#999;text-align:center">ARTIKULA — Laravel 13 / MySQL 9 / Sanctum SPA / PHPUnit &nbsp;|&nbsp; 2026</p>
+</body>
+</html>

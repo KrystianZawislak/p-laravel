@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ARTIKULA — Project Setup Guide</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 14px; color: #1a1a1a; line-height: 1.6; background: #fff; padding: 48px; max-width: 860px; margin: 0 auto; }
+  h1 { font-size: 28px; font-weight: 700; margin-bottom: 4px; letter-spacing: -0.5px; }
+  .subtitle { font-size: 14px; color: #666; margin-bottom: 40px; }
+  h2 { font-size: 16px; font-weight: 700; margin: 36px 0 12px; padding-bottom: 6px; border-bottom: 2px solid #e8e8e8; text-transform: uppercase; letter-spacing: 0.05em; color: #111; }
+  h3 { font-size: 13px; font-weight: 700; margin: 20px 0 8px; color: #333; }
+  p { margin-bottom: 10px; color: #444; }
+  .step { display: flex; gap: 16px; margin-bottom: 20px; }
+  .step-num { flex-shrink: 0; width: 28px; height: 28px; background: #1a1a1a; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; margin-top: 2px; }
+  .step-body { flex: 1; }
+  .step-body strong { display: block; margin-bottom: 4px; font-size: 14px; }
+  pre { background: #f4f4f4; border: 1px solid #e0e0e0; border-radius: 6px; padding: 12px 16px; margin: 6px 0 10px; overflow-x: auto; }
+  code { font-family: 'SF Mono', 'Fira Code', Consolas, monospace; font-size: 13px; color: #1a1a1a; }
+  pre code { color: #1a1a1a; }
+  .inline { background: #f0f0f0; padding: 1px 6px; border-radius: 3px; font-family: monospace; font-size: 13px; }
+  .note { background: #fffbeb; border-left: 3px solid #f59e0b; padding: 10px 14px; margin: 10px 0; border-radius: 0 6px 6px 0; font-size: 13px; color: #555; }
+  .warn { background: #fff1f0; border-left: 3px solid #ef4444; padding: 10px 14px; margin: 10px 0; border-radius: 0 6px 6px 0; font-size: 13px; color: #555; }
+  .ok { background: #f0fdf4; border-left: 3px solid #22c55e; padding: 10px 14px; margin: 10px 0; border-radius: 0 6px 6px 0; font-size: 13px; color: #555; }
+  .url { font-size: 18px; font-weight: 700; background: #f4f4f4; padding: 10px 16px; border-radius: 6px; display: inline-block; margin: 8px 0; font-family: monospace; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 13px; }
+  th { background: #f4f4f4; padding: 8px 12px; text-align: left; font-weight: 700; border: 1px solid #e0e0e0; }
+  td { padding: 8px 12px; border: 1px solid #e0e0e0; color: #444; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 700; }
+  .badge-green { background: #dcfce7; color: #166534; }
+  .badge-red { background: #fee2e2; color: #991b1b; }
+  @media print {
+    body { padding: 20px; font-size: 12px; }
+    h2 { break-before: auto; }
+    pre { break-inside: avoid; }
+    .step { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<h1>ARTIKULA — Setup Guide</h1>
+<p class="subtitle">Laravel 13 + MySQL + Sanctum SPA &nbsp;|&nbsp; Speech therapy booking system</p>
+
+<!-- ================================================== -->
+<h2>Requirements</h2>
+
+<table>
+  <tr><th>Tool</th><th>Version</th><th>How to check</th></tr>
+  <tr><td>PHP</td><td>8.2+</td><td><code>php -v</code></td></tr>
+  <tr><td>Composer</td><td>2.x</td><td><code>composer --version</code></td></tr>
+  <tr><td>MySQL</td><td>8.0+</td><td><code>mysql --version</code></td></tr>
+  <tr><td>Git</td><td>any</td><td><code>git --version</code></td></tr>
+</table>
+
+<div class="note">On Mac with Laravel Herd: use <code class="inline">php85</code> instead of <code class="inline">php</code> and <code class="inline">php85 artisan</code> instead of <code class="inline">php artisan</code>. MySQL must be installed separately via Homebrew — Herd does NOT include MySQL.</div>
+
+<!-- ================================================== -->
+<h2>Step 1 — Clone the repository</h2>
+
+<div class="step">
+  <div class="step-num">1</div>
+  <div class="step-body">
+    <strong>Clone and enter the project</strong>
+    <pre><code>git clone https://github.com/KrystianZawislak/p-laravel.git
+cd p-laravel/app</code></pre>
+  </div>
+</div>
+
+<!-- ================================================== -->
+<h2>Step 2 — Install PHP dependencies</h2>
+
+<div class="step">
+  <div class="step-num">2</div>
+  <div class="step-body">
+    <strong>Install packages from composer.lock</strong>
+    <pre><code>composer install</code></pre>
+    <p>This downloads all PHP packages into the <code class="inline">vendor/</code> folder. The <code class="inline">composer.lock</code> file in the repo guarantees everyone gets the exact same package versions.</p>
+  </div>
+</div>
+
+<!-- ================================================== -->
+<h2>Step 3 — Environment file</h2>
+
+<div class="step">
+  <div class="step-num">3</div>
+  <div class="step-body">
+    <strong>Copy the example .env file</strong>
+    <pre><code>cp .env.example .env</code></pre>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-num">4</div>
+  <div class="step-body">
+    <strong>Generate the application key</strong>
+    <pre><code>php artisan key:generate</code></pre>
+    <p>This writes a unique secret key into your <code class="inline">.env</code> file. Required for sessions and encryption.</p>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-num">5</div>
+  <div class="step-body">
+    <strong>Edit .env — set database connection</strong>
+    <p>Open <code class="inline">.env</code> in any text editor and update these lines:</p>
+    <pre><code>DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=artikula
+DB_USERNAME=root
+DB_PASSWORD=
+
+SANCTUM_STATEFUL_DOMAINS=localhost,127.0.0.1,127.0.0.1:8000</code></pre>
+    <div class="note">DB_PASSWORD is empty if you installed MySQL via Homebrew with default settings.</div>
+  </div>
+</div>
+
+<!-- ================================================== -->
+<h2>Step 4 — Database setup</h2>
+
+<div class="step">
+  <div class="step-num">6</div>
+  <div class="step-body">
+    <strong>Start MySQL (Mac + Homebrew)</strong>
+    <pre><code>brew services start mysql</code></pre>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-num">7</div>
+  <div class="step-body">
+    <strong>Create the database</strong>
+    <pre><code>mysql -u root -e "CREATE DATABASE artikula CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"</code></pre>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-num">8</div>
+  <div class="step-body">
+    <strong>Run migrations + seed initial data</strong>
+    <pre><code>php artisan migrate --seed</code></pre>
+    <p>This creates all 4 tables (users, services, appointments, personal_access_tokens) and inserts the 6 therapy services from the seeder. No user accounts are created — those are made through the app.</p>
+  </div>
+</div>
+
+<!-- ================================================== -->
+<h2>Step 5 — Run the server</h2>
+
+<h3>Option A — Local only (recommended for development)</h3>
+<pre><code>php artisan serve</code></pre>
+<p>Open in browser:</p>
+<div class="url">http://127.0.0.1:8000</div>
+<p>Only accessible from this computer. Nothing exposed to the network.</p>
+
+<h3>Option B — Network access (same Wi-Fi, for mobile testing)</h3>
+<pre><code>php artisan serve --host=0.0.0.0 --port=8000</code></pre>
+<p>Find your local IP address:</p>
+<pre><code>ipconfig getifaddr en0</code></pre>
+<p>Then open on any device on the same Wi-Fi:</p>
+<div class="url">http://[YOUR-LOCAL-IP]:8000</div>
+<p>Example: <code class="inline">http://172.20.10.5:8000</code></p>
+
+<!-- ================================================== -->
+<h2>Network mode — Is it secure?</h2>
+
+<table>
+  <tr><th>What</th><th>Status</th><th>Explanation</th></tr>
+  <tr>
+    <td>"Not secure" warning in browser</td>
+    <td><span class="badge badge-red">WARNING</span></td>
+    <td>Normal. The dev server uses HTTP, not HTTPS. No SSL certificate. This is expected on localhost.</td>
+  </tr>
+  <tr>
+    <td>Data visible on local network</td>
+    <td><span class="badge badge-red">YES</span></td>
+    <td>Without HTTPS, traffic between your phone and laptop is unencrypted on the Wi-Fi network.</td>
+  </tr>
+  <tr>
+    <td>Accessible from the internet</td>
+    <td><span class="badge badge-green">NO</span></td>
+    <td>192.168.x.x and 172.x.x.x are private IP ranges. Not reachable outside your router.</td>
+  </tr>
+  <tr>
+    <td>Safe for demos / testing</td>
+    <td><span class="badge badge-green">YES</span></td>
+    <td>On a trusted private network (home / hotspot) this is fine. Do not use real passwords.</td>
+  </tr>
+</table>
+
+<div class="warn">Never run <code class="inline">--host=0.0.0.0</code> on a public Wi-Fi (cafe, airport). Your app would be visible to everyone on that network.</div>
+<div class="ok">For mobile demos on your own hotspot or home network: completely fine.</div>
+
+<!-- ================================================== -->
+<h2>Run automated tests</h2>
+
+<pre><code>php artisan test</code></pre>
+<p>Expected result: <strong>15 passed</strong>. Tests use an in-memory SQLite database — they do not touch your MySQL data.</p>
+
+<!-- ================================================== -->
+<h2>Git branches</h2>
+
+<table>
+  <tr><th>Branch</th><th>Purpose</th></tr>
+  <tr><td><code>main</code></td><td>Production-ready code</td></tr>
+  <tr><td><code>develop</code></td><td>Active development branch</td></tr>
+  <tr><td><code>feature/backend-api</code></td><td>All backend work (merged into develop + main)</td></tr>
+  <tr><td><code>hotfix/appointment-limit</code></td><td>Max 3 appointments per user (merged)</td></tr>
+</table>
+
+<br><br>
+<hr style="border:none;border-top:1px solid #e0e0e0;margin:24px 0">
+<p style="font-size:12px;color:#999;text-align:center">ARTIKULA — Laravel 13 / MySQL 9 / Sanctum SPA / PHPUnit &nbsp;|&nbsp; 2026</p>
+
+</body>
+</html>

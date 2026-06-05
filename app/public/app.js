@@ -135,10 +135,24 @@ $(async function () {
   }
   renderMobAuth();
 
+  let _scrollY = 0;
+  function lockBody() {
+    _scrollY = window.scrollY;
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${_scrollY}px`;
+    document.body.style.width = '100%';
+  }
+  function unlockBody() {
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.width = '';
+    window.scrollTo(0, _scrollY);
+  }
+
   function closeMobileMenu() {
     $('#hamburger').removeClass('open');
     $('#mobile-menu').removeClass('open');
-    $('body').css('overflow', '');
+    unlockBody();
   }
 
   $('#hamburger').on('click', function () {
@@ -148,7 +162,7 @@ $(async function () {
     } else {
       $(this).addClass('open');
       $('#mobile-menu').addClass('open');
-      $('body').css('overflow', 'hidden');
+      lockBody();
     }
   });
 
@@ -202,7 +216,11 @@ $(async function () {
   /* ---- MARQUEE ---- */
   const words = ['Artykulacja','Dykcja','Emisja głosu','Wymowa','Pewność','Oddech','Rezonans','Ekspresja'];
   const row = [...words, ...words];
-  $('#marquee-track').html(row.map(w => `<span><span class="star">✦</span>${w}</span>`).join(''));
+  const marqueeTrack = document.getElementById('marquee-track');
+  marqueeTrack.innerHTML = row.map(w => `<span><span class="star">✦</span>${w}</span>`).join('');
+  marqueeTrack.style.animation = 'none';
+  marqueeTrack.getBoundingClientRect();
+  marqueeTrack.style.animation = '';
 
   /* ---- SERVICE CARDS ---- */
   $('#cards').html(CARDS.map((c, i) => `
@@ -318,7 +336,11 @@ $(async function () {
 
       /* fade scroll hint at very end */
       const hint = document.querySelector('.scroll-hint');
-      if (hint) hint.style.opacity = p < 0.88 ? 1 : Math.max(0, 1 - (p - 0.88) / 0.10);
+      const isLandscape = window.matchMedia('(orientation:landscape) and (max-height:520px)').matches;
+      if (hint) {
+        if (isLandscape) { hint.style.display = 'none'; }
+        else { hint.style.display = ''; hint.style.opacity = p < 0.88 ? 1 : Math.max(0, 1 - (p - 0.88) / 0.10); }
+      }
 
       /* subtle zoom */
       canvas.style.transform = 'scale(' + (1 + p * 0.18) + ')';
@@ -334,7 +356,7 @@ $(async function () {
   /* time chips */
   function renderChips() {
     $('#time-chips').html(TIMES.map(t =>
-      `<div class="chip-sel${t === selTime ? ' on' : ''}" data-time="${t}">${t}</div>`
+      `<button type="button" class="chip-sel${t === selTime ? ' on' : ''}" data-time="${t}">${t}</button>`
     ).join(''));
   }
 
