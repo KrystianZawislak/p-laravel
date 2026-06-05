@@ -71,11 +71,14 @@ body{
 .brand{font-family:var(--serif);font-weight:600;font-size:25px;letter-spacing:.14em;color:var(--ink);
   text-decoration:none;display:flex;align-items:center;gap:11px}
 .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--rose);display:inline-block}
-.nav-links{display:flex;align-items:center;gap:34px}
-.nav-links a{font-size:14.5px;font-weight:500;color:var(--ink-soft);text-decoration:none;
+.nav-links{display:flex;align-items:center;gap:24px}
+.nav-links a{font-size:14px;font-weight:500;color:var(--ink-soft);text-decoration:none;
   transition:color .3s;letter-spacing:.01em}
 .nav-links a:hover{color:var(--rose-deep)}
-@media(max-width:880px){.nav-links a:not(.nav-cta){display:none}}
+.nav-links .btn{font-size:13.5px;padding:10px 20px}
+.nav-links #nav-auth{display:flex;align-items:center}
+.nav-links #nav-auth a,.nav-links #nav-auth button{font-size:13.5px;padding:10px 20px}
+@media(max-width:960px){.nav-links a:not(.btn):not(#nav-auth a){display:none}}
 
 /* ---- hero ---- */
 .hero{position:relative;height:340vh}
@@ -115,10 +118,10 @@ body{
 @keyframes slide{to{transform:translateX(-50%)}}
 
 /* ---- section heads ---- */
-.section{position:relative;z-index:6;padding:80px 0;background:var(--cream)}
+.section{position:relative;z-index:6;padding:90px 0;background:var(--cream)}
 .section.alt{background:var(--cream-2)}
 .sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:30px;
-  margin-bottom:40px;flex-wrap:wrap}
+  margin-bottom:44px;flex-wrap:wrap}
 .sec-title{font-family:var(--serif);font-weight:500;font-size:clamp(36px,5vw,64px);line-height:1;
   letter-spacing:-.01em;max-width:14ch}
 .sec-title em{font-style:italic;color:var(--rose-deep)}
@@ -168,10 +171,9 @@ body{
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
 @media(max-width:760px){.stats{grid-template-columns:1fr 1fr}}
 .stat{padding:34px 26px;border-radius:26px;background:var(--cream);border:1px solid var(--sand-deep);
-  transition:transform .6s var(--ease-out),background .5s}
+  transition:transform .6s var(--ease-out),box-shadow .6s var(--ease-out)}
 .section.alt .stat{background:var(--cream)}
-.stat:hover{transform:translateY(-8px) rotate(-1.5deg);background:var(--ink);color:var(--cream)}
-.stat:hover .stat-num,.stat:hover .stat-lab{color:var(--cream)}
+.stat:hover{transform:translateY(-10px);box-shadow:var(--shadow-soft)}
 .stat-num{font-family:var(--serif);font-size:clamp(44px,5vw,64px);font-weight:500;line-height:1;
   color:var(--ink);letter-spacing:-.02em}
 .stat-num em{font-style:italic;color:var(--rose-deep);font-size:.55em;vertical-align:super}
@@ -257,8 +259,8 @@ body{
 /* ---- testimonials ---- */
 .quotes{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
 @media(max-width:880px){.quotes{grid-template-columns:1fr}}
-.quote{background:var(--cream);border:1px solid var(--sand-deep);border-radius:26px;padding:32px;
-  transition:transform .6s var(--ease-out),box-shadow .6s}
+.quote{background:var(--cream);border:1px solid var(--sand-deep);border-radius:26px;padding:28px;
+  transition:transform .6s var(--ease-out),box-shadow .6s;display:flex;flex-direction:column}
 .quote:hover{transform:translateY(-8px) rotate(1deg);box-shadow:var(--shadow-soft)}
 .quote .stars{color:var(--rose);letter-spacing:3px;font-size:14px;margin-bottom:16px}
 .quote p{font-family:var(--serif);font-size:21px;line-height:1.4;color:var(--ink);font-style:italic}
@@ -269,7 +271,7 @@ body{
 .quote .who .rl{font-size:12.5px;color:var(--ink-soft)}
 
 /* ---- cta ---- */
-.cta{position:relative;z-index:6;background:var(--ink);color:var(--cream);padding:120px 0;overflow:hidden}
+.cta{position:relative;z-index:6;background:var(--ink);color:var(--cream);padding:100px 0;overflow:hidden}
 .cta .wrap{position:relative;z-index:2;text-align:center}
 .cta h2{font-family:var(--serif);font-weight:500;font-size:clamp(42px,7vw,96px);line-height:.98;
   letter-spacing:-.01em}
