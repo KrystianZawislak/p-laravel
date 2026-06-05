@@ -202,7 +202,11 @@ $(async function () {
   /* ---- MARQUEE ---- */
   const words = ['Artykulacja','Dykcja','Emisja głosu','Wymowa','Pewność','Oddech','Rezonans','Ekspresja'];
   const row = [...words, ...words];
-  $('#marquee-track').html(row.map(w => `<span><span class="star">✦</span>${w}</span>`).join(''));
+  const marqueeTrack = document.getElementById('marquee-track');
+  marqueeTrack.innerHTML = row.map(w => `<span><span class="star">✦</span>${w}</span>`).join('');
+  marqueeTrack.style.animation = 'none';
+  marqueeTrack.getBoundingClientRect();
+  marqueeTrack.style.animation = '';
 
   /* ---- SERVICE CARDS ---- */
   $('#cards').html(CARDS.map((c, i) => `
