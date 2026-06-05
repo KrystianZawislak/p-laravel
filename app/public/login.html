@@ -70,7 +70,6 @@ $(function () {
     const pass  = $('#f-password').val();
     $('.err-msg').hide();
     $('input').removeClass('err');
-
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       $('#err-email').text('Podaj poprawny adres e-mail').show();
       $('#f-email').addClass('err');
@@ -84,13 +83,37 @@ $(function () {
     return ok;
   }
 
-  $('#btn-login').on('click', function () {
-    if (!validate()) return;
+  function getXsrf() {
+    return decodeURIComponent(document.cookie.match(/XSRF-TOKEN=([^;]+)/)?.[1] || '');
+  }
 
-    // TODO: replace with real API call
-    const user = { name: 'Użytkownik', email: $('#f-email').val().trim() };
-    localStorage.setItem('artikula_user', JSON.stringify(user));
-    window.location.href = '/';
+  $('#btn-login').on('click', async function () {
+    if (!validate()) return;
+    const $btn = $(this).prop('disabled', true).text('Logowanie…');
+
+    await fetch('/sanctum/csrf-cookie', { credentials: 'include' });
+    const res = await fetch('/api/login', {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-XSRF-TOKEN': getXsrf() },
+      body: JSON.stringify({ email: $('#f-email').val().trim(), password: $('#f-password').val() }),
+    });
+
+    if (res.ok) {
+      window.location.href = '/';
+      return;
+    }
+    const data = await res.json().catch(() => ({}));
+    if (res.status === 401) {
+      $('#err-password').text(data.message || 'Nieprawidłowe dane logowania.').show();
+      $('#f-password').addClass('err');
+    } else if (res.status === 422 && data.errors) {
+      Object.entries(data.errors).forEach(([field, msgs]) => {
+        $(`#err-${field}`).text(msgs[0]).show();
+        $(`#f-${field}`).addClass('err');
+      });
+    }
+    $btn.prop('disabled', false).text('Zaloguj się');
   });
 
   $('input').on('keydown', function (e) {

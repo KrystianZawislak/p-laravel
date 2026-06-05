@@ -1,21 +1,40 @@
 /* ============ ARTIKULA — app.js (jQuery + vanilla) ============ */
 
-$(function () {
+$(async function () {
 
   /* ---- AUTH STATE ---- */
   let currentUser = null;
-  try { currentUser = JSON.parse(localStorage.getItem('artikula_user')); } catch(e) {}
+  try {
+    const r = await fetch('/api/user', { credentials: 'include', headers: { 'Accept': 'application/json' } });
+    if (r.ok) currentUser = await r.json();
+  } catch(e) {}
+
+  /* ---- CSRF helpers ---- */
+  function getXsrf() {
+    return decodeURIComponent(document.cookie.match(/XSRF-TOKEN=([^;]+)/)?.[1] || '');
+  }
+  async function apiPost(method, url, body) {
+    await fetch('/sanctum/csrf-cookie', { credentials: 'include' });
+    return fetch(url, {
+      method,
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-XSRF-TOKEN': getXsrf() },
+      body: body ? JSON.stringify(body) : undefined,
+    });
+  }
+  async function apiGet(url) {
+    return fetch(url, { credentials: 'include', headers: { 'Accept': 'application/json' } });
+  }
 
   function renderNavAuth() {
     if (currentUser) {
+      const label = currentUser.email.split('@')[0];
       $('#nav-auth').html(`
-        <span style="font-size:14px;font-weight:500;color:var(--ink-soft);margin-right:4px">
-          ${currentUser.name.split(' ')[0]}
-        </span>
+        <span style="font-size:14px;font-weight:500;color:var(--ink-soft);margin-right:4px">${label}</span>
         <button class="btn btn-ghost nav-cta" id="btn-logout" style="padding:11px 22px">Wyloguj</button>
       `);
-      $('#btn-logout').on('click', function () {
-        localStorage.removeItem('artikula_user');
+      $('#btn-logout').on('click', async function () {
+        await apiPost('POST', '/api/logout');
         window.location.reload();
       });
     } else {
@@ -31,7 +50,7 @@ $(function () {
     'Diagnoza logopedyczna','Terapia wymowy','Emisja głosu',
     'Trening dykcji','Terapia seplenienia','Logopedia dziecięca'
   ];
-  const TIMES = ['09:00','10:30','12:00','15:00','16:30','18:00'];
+  const TIMES = ['09:00','10:00','11:00','13:00','15:00','18:00'];
   const PL_MON = ['STY','LUT','MAR','KWI','MAJ','CZE','LIP','SIE','WRZ','PAŹ','LIS','GRU'];
 
   const CARDS = [
@@ -97,14 +116,15 @@ $(function () {
   /* ---- HAMBURGER / MOBILE MENU ---- */
   function renderMobAuth() {
     if (currentUser) {
+      const label = currentUser.email.split('@')[0];
       $('#mob-auth').html(`
         <div style="display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:8px">
-          <span style="font-size:14px;color:var(--ink-soft);font-weight:500">${currentUser.name.split(' ')[0]}</span>
+          <span style="font-size:14px;color:var(--ink-soft);font-weight:500">${label}</span>
           <button class="mob-link mob-cta" id="mob-logout">Wyloguj</button>
         </div>
       `);
-      $('#mob-logout').on('click', function () {
-        localStorage.removeItem('artikula_user');
+      $('#mob-logout').on('click', async function () {
+        await apiPost('POST', '/api/logout');
         window.location.reload();
       });
     } else {
@@ -306,22 +326,10 @@ $(function () {
     });
   }).trigger('scroll.hero');
 
-  /* ---- BOOKING CRUD (localStorage) ---- */
-  if (localStorage.getItem('artikula_v') !== '2') {
-    localStorage.removeItem('artikula_bookings');
-    localStorage.setItem('artikula_v', '2');
-  }
-
+  /* ---- BOOKING CRUD (API) ---- */
   let bookings = [];
-  try { bookings = JSON.parse(localStorage.getItem('artikula_bookings')) || []; } catch(e) { bookings = []; }
-
-  let editId    = null;
-  let selTime   = '10:30';
-  const emptyForm = () => ({ name: '', service: SERVICES[0], date: todayPlus(1), time: '10:30', mode: 'Gabinet' });
-
-  /* populate selects */
-  $('#f-service').html(SERVICES.map(s => `<option>${s}</option>`).join(''));
-  $('#f-date').attr('min', todayStr()).val(todayPlus(1));
+  let editId   = null;
+  let selTime  = TIMES[0];
 
   /* time chips */
   function renderChips() {
@@ -329,17 +337,11 @@ $(function () {
       `<div class="chip-sel${t === selTime ? ' on' : ''}" data-time="${t}">${t}</div>`
     ).join(''));
   }
-  renderChips();
 
   $(document).on('click', '.chip-sel', function () {
     selTime = $(this).data('time');
     renderChips();
   });
-
-  /* save to localStorage */
-  function saveBookings() {
-    try { localStorage.setItem('artikula_bookings', JSON.stringify(bookings)); } catch(e) {}
-  }
 
   /* render list */
   function renderList() {
@@ -363,11 +365,11 @@ $(function () {
         <div class="b-item" data-id="${b.id}">
           <div class="b-date"><div class="d">${d}</div><div class="m">${m}</div></div>
           <div class="b-main">
-            <div class="svc">${b.service}</div>
+            <div class="svc">${b.service?.name ?? ''}</div>
             <div class="meta">
               <span>◷ ${b.time}</span>
-              <span>${b.mode === 'Online' ? '⌁ Online' : '⌂ Gabinet'}</span>
-              <span>${b.name}</span>
+              <span>${b.mode === 'online' ? '⌁ Online' : '⌂ Gabinet'}</span>
+              <span>${b.patient_name}</span>
             </div>
           </div>
           <div class="b-actions">
@@ -382,54 +384,81 @@ $(function () {
       `;
     }).join('')}</div>`);
   }
-  renderList();
 
   /* validate */
   function validate() {
     let ok = true;
     const name = $('#f-name').val().trim();
     const date = $('#f-date').val();
-
-    $('#err-name').hide();
-    $('#err-date').hide();
-    $('#f-name').removeClass('err');
-    $('#f-date').removeClass('err');
-
-    if (!name || name.length < 3) {
+    $('#err-name, #err-date').hide();
+    $('#f-name, #f-date').removeClass('err');
+    if (!name || name.length < 2) {
       $('#err-name').text(name ? 'Imię jest za krótkie' : 'Podaj imię i nazwisko').show();
-      $('#f-name').addClass('err');
-      ok = false;
+      $('#f-name').addClass('err'); ok = false;
     }
     if (!date || date < todayStr()) {
       $('#err-date').text(!date ? 'Wybierz datę' : 'Data nie może być z przeszłości').show();
-      $('#f-date').addClass('err');
-      ok = false;
+      $('#f-date').addClass('err'); ok = false;
     }
     return ok;
   }
 
+  function resetForm() {
+    $('#f-name').val('').removeClass('err');
+    $('#f-date').val(todayPlus(1)).removeClass('err');
+    $('#f-mode').val('stacjonarnie');
+    selTime = TIMES[0];
+    renderChips();
+    $('#err-name, #err-date').hide();
+  }
+
+  function cancelEdit() {
+    editId = null;
+    resetForm();
+    $('#form-title').text('Umów wizytę');
+    $('#form-sub').text('Wybierz usługę i dogodny termin — potwierdzimy w 24 h.');
+    $('#btn-submit').text('Zarezerwuj termin');
+    $('#btn-cancel').hide();
+  }
+
   /* submit */
-  $('#btn-submit').on('click', function () {
+  $('#btn-submit').on('click', async function () {
     if (!validate()) return;
-    const entry = {
-      name:    $('#f-name').val().trim(),
-      service: $('#f-service').val(),
-      date:    $('#f-date').val(),
-      time:    selTime,
-      mode:    $('#f-mode').val(),
+    const $btn = $(this).prop('disabled', true);
+    const payload = {
+      service_id:   +$('#f-service').val(),
+      patient_name: $('#f-name').val().trim(),
+      date:         $('#f-date').val(),
+      time:         selTime,
+      mode:         $('#f-mode').val(),
     };
+    let res;
     if (editId) {
-      bookings = bookings.map(b => b.id === editId ? { ...entry, id: editId } : b);
-      showToast('Wizyta zaktualizowana');
-      cancelEdit();
+      res = await apiPost('PUT', `/api/appointments/${editId}`, payload);
     } else {
-      entry.id = Date.now();
-      bookings.push(entry);
-      showToast('Wizyta zarezerwowana');
-      resetForm();
+      res = await apiPost('POST', '/api/appointments', payload);
     }
-    saveBookings();
-    renderList();
+    if (res.ok) {
+      const saved = await res.json();
+      if (editId) {
+        bookings = bookings.map(b => b.id === editId ? saved : b);
+        showToast('Wizyta zaktualizowana');
+        cancelEdit();
+      } else {
+        bookings.push(saved);
+        showToast('Wizyta zarezerwowana');
+        resetForm();
+      }
+      renderList();
+    } else {
+      const data = await res.json().catch(() => ({}));
+      if (res.status === 422 && data.errors) {
+        if (data.errors.time)  { showToast(data.errors.time[0]); }
+        if (data.errors.date)  { $('#err-date').text(data.errors.date[0]).show(); $('#f-date').addClass('err'); }
+        if (data.errors.patient_name) { $('#err-name').text(data.errors.patient_name[0]).show(); $('#f-name').addClass('err'); }
+      }
+    }
+    $btn.prop('disabled', false);
   });
 
   /* edit */
@@ -438,8 +467,8 @@ $(function () {
     const b = bookings.find(x => x.id === id);
     if (!b) return;
     editId = id;
-    $('#f-name').val(b.name).removeClass('err');
-    $('#f-service').val(b.service);
+    $('#f-name').val(b.patient_name).removeClass('err');
+    $('#f-service').val(b.service_id);
     $('#f-date').val(b.date).removeClass('err');
     $('#f-mode').val(b.mode);
     selTime = b.time;
@@ -453,36 +482,47 @@ $(function () {
   });
 
   /* delete */
-  $(document).on('click', '.btn-del', function () {
+  $(document).on('click', '.btn-del', async function () {
     const id = +$(this).data('id');
-    bookings = bookings.filter(b => b.id !== id);
-    if (editId === id) cancelEdit();
-    saveBookings();
-    renderList();
-    showToast('Wizyta odwołana');
+    const res = await apiPost('DELETE', `/api/appointments/${id}`);
+    if (res.ok || res.status === 204) {
+      bookings = bookings.filter(b => b.id !== id);
+      if (editId === id) cancelEdit();
+      renderList();
+      showToast('Wizyta odwołana');
+    }
   });
 
-  /* cancel edit */
   $('#btn-cancel').on('click', cancelEdit);
 
-  function cancelEdit() {
-    editId = null;
-    resetForm();
-    $('#form-title').text('Umów wizytę');
-    $('#form-sub').text('Wybierz usługę i dogodny termin — potwierdzimy w 24 h.');
-    $('#btn-submit').text('Zarezerwuj termin');
-    $('#btn-cancel').hide();
-  }
-
-  function resetForm() {
-    const f = emptyForm();
-    $('#f-name').val('').removeClass('err');
-    $('#f-service').val(f.service);
-    $('#f-date').val(f.date).removeClass('err');
-    $('#f-mode').val(f.mode);
-    selTime = f.time;
+  /* init booking section */
+  if (!currentUser) {
+    $('.panel').html(`
+      <h3>Umów wizytę</h3>
+      <p class="muted" style="margin-bottom:28px">Zaloguj się, żeby umówić wizytę i zarządzać swoim kalendarzem.</p>
+      <a href="/login" class="btn btn-rose" style="display:inline-flex;justify-content:center;width:100%;padding:14px">
+        Zaloguj się
+      </a>
+      <div style="text-align:center;margin-top:18px;font-size:14px;color:var(--ink-soft)">
+        Nie masz konta? <a href="/register" style="color:var(--rose-deep);font-weight:600">Zarejestruj się</a>
+      </div>
+    `);
+    $('#b-list-wrap').html(`
+      <div class="b-empty"><div class="big">Zaloguj się</div><div>żeby zobaczyć swoje wizyty.</div></div>
+    `);
+  } else {
+    /* populate services from API */
+    const svcRes = await apiGet('/api/services');
+    let services = [];
+    if (svcRes.ok) services = await svcRes.json();
+    $('#f-service').html(services.map(s => `<option value="${s.id}">${s.name}</option>`).join(''));
+    $('#f-date').attr('min', todayStr()).val(todayPlus(1));
     renderChips();
-    $('#err-name, #err-date').hide();
+
+    /* load appointments */
+    const aptRes = await apiGet('/api/appointments');
+    if (aptRes.ok) bookings = await aptRes.json();
+    renderList();
   }
 
   /* re-bind reveal after dynamic content */

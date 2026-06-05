@@ -39,12 +39,6 @@
     <p class="auth-sub">Dołącz do ARTIKULA i zarządzaj swoimi wizytami online.</p>
 
     <div class="field">
-      <label for="f-name">Imię i nazwisko</label>
-      <input id="f-name" type="text" placeholder="np. Jan Kowalski" autocomplete="name" />
-      <div class="err-msg" id="err-name"></div>
-    </div>
-
-    <div class="field">
       <label for="f-email">Adres e-mail</label>
       <input id="f-email" type="email" placeholder="np. jan@example.com" autocomplete="email" />
       <div class="err-msg" id="err-email"></div>
@@ -78,17 +72,11 @@
 $(function () {
   function validate() {
     let ok = true;
-    const name  = $('#f-name').val().trim();
     const email = $('#f-email').val().trim();
     const pass  = $('#f-password').val();
     const conf  = $('#f-confirm').val();
     $('.err-msg').hide();
     $('input').removeClass('err');
-
-    if (!name || name.length < 3) {
-      $('#err-name').text('Podaj imię i nazwisko (min. 3 znaki)').show();
-      $('#f-name').addClass('err'); ok = false;
-    }
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       $('#err-email').text('Podaj poprawny adres e-mail').show();
       $('#f-email').addClass('err'); ok = false;
@@ -104,13 +92,34 @@ $(function () {
     return ok;
   }
 
-  $('#btn-register').on('click', function () {
-    if (!validate()) return;
+  function getXsrf() {
+    return decodeURIComponent(document.cookie.match(/XSRF-TOKEN=([^;]+)/)?.[1] || '');
+  }
 
-    // TODO: replace with real API call
-    const user = { name: $('#f-name').val().trim(), email: $('#f-email').val().trim() };
-    localStorage.setItem('artikula_user', JSON.stringify(user));
-    window.location.href = '/';
+  $('#btn-register').on('click', async function () {
+    if (!validate()) return;
+    const $btn = $(this).prop('disabled', true).text('Rejestracja…');
+
+    await fetch('/sanctum/csrf-cookie', { credentials: 'include' });
+    const res = await fetch('/api/register', {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-XSRF-TOKEN': getXsrf() },
+      body: JSON.stringify({ email: $('#f-email').val().trim(), password: $('#f-password').val() }),
+    });
+
+    if (res.ok) {
+      window.location.href = '/';
+      return;
+    }
+    const data = await res.json().catch(() => ({}));
+    if (res.status === 422 && data.errors) {
+      Object.entries(data.errors).forEach(([field, msgs]) => {
+        $(`#err-${field}`).text(msgs[0]).show();
+        $(`#f-${field}`).addClass('err');
+      });
+    }
+    $btn.prop('disabled', false).text('Zarejestruj się');
   });
 
   $('input').on('keydown', function (e) {
