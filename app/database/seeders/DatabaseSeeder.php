@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
+use App\Models\Service;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -10,16 +10,19 @@ class DatabaseSeeder extends Seeder
 {
     use WithoutModelEvents;
 
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        // User::factory(10)->create();
+        $services = [
+            'Terapia jąkania',
+            'Wady wymowy',
+            'Opóźniony rozwój mowy',
+            'Afazja',
+            'Terapia głosu',
+            'Logopedia dla dzieci',
+        ];
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        foreach ($services as $name) {
+            Service::firstOrCreate(['name' => $name]);
+        }
     }
 }
