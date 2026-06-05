@@ -53,14 +53,20 @@ body{
 /* buttons */
 .btn{display:inline-flex;align-items:center;gap:.6em;font-family:var(--sans);font-weight:600;
   font-size:15px;border:none;cursor:pointer;border-radius:var(--r-pill);
-  padding:15px 28px;transition:transform .5s var(--ease-out),background .4s,box-shadow .5s,color .4s;
-  text-decoration:none;line-height:1}
+  padding:15px 28px;transition:color .35s var(--ease-out),box-shadow .4s,border-color .35s;
+  text-decoration:none;line-height:1;position:relative;overflow:hidden;z-index:0}
+.btn::before{content:'';position:absolute;inset:0;border-radius:inherit;
+  transform:scale(0);transition:transform .45s var(--ease-out);z-index:-1}
+.btn:hover::before{transform:scale(1)}
 .btn-primary{background:var(--ink);color:var(--cream)}
-.btn-primary:hover{background:var(--rose-deep);transform:translateY(-3px);box-shadow:var(--shadow-card)}
+.btn-primary::before{background:var(--rose-deep)}
+.btn-primary:hover{color:var(--cream);box-shadow:var(--shadow-card)}
 .btn-ghost{background:transparent;color:var(--ink);border:1px solid var(--taupe)}
-.btn-ghost:hover{background:var(--ink);color:var(--cream);transform:translateY(-3px)}
+.btn-ghost::before{background:var(--ink)}
+.btn-ghost:hover{color:var(--cream);border-color:var(--ink)}
 .btn-rose{background:var(--rose);color:#fff}
-.btn-rose:hover{background:var(--rose-deep);transform:translateY(-3px);box-shadow:var(--shadow-card)}
+.btn-rose::before{background:var(--rose-deep)}
+.btn-rose:hover{color:#fff;box-shadow:var(--shadow-card)}
 
 /* ---- nav ---- */
 .nav{position:fixed;top:0;left:0;right:0;z-index:40;transition:background .5s var(--ease),
